@@ -1,2 +1,6 @@
 env/*
 cross-compiler/*
+src/build-gcc/gcc/lto-dump
+src/buil-gcc/gcc/lto1
+src/build-gcc/gcc/cc1
+src/build-gcc/gcc/cc1plus
