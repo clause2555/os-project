@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+. ./build.sh
+
+mkdir -p isodir
+mkdir -p isordir/boot
+mkdir -p isodir/boot/grub
+
+cp sysroot/boot/myos.kernel isodir/boot/myos.kernel
+cat > isodir/boot/grub/grub.cfg <<EOF
+set default = 0
+set timeout = 5
+
+menuentry "MyOS" {
+    multiboot /boot/myos.kernel
+    boot
+}
+EOF
+grub-mkrescue -o myos.iso isodir
