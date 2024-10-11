@@ -1,8 +1,8 @@
-#OS Project#
+# OS Project
 
 This project follows along with the OSDEV.org tutorials, focusing on building an operating system from scratch. It serves as a learning experience in low-level programming, using a combination of C and assembly language, and leveraging tools like GCC and Binutils.
 
-###Prerequisites###
+### Prerequisites
 
 GCC: Cross-compiler version to build the kernel.
 
@@ -10,7 +10,7 @@ Binutils: Required for linking and assembling.
 
 QEMU/Bochs: Emulator to run the OS.
 
-###Project Structure###
+### Project Structure
 
 ISOs/: Generated ISO files for testing.
 
@@ -22,7 +22,7 @@ binutils/, gcc/: Compiler toolchain setup.
 
 src/: Source code for building the Cross-Compiler (Cross-Compiler files and binaries not included as they are very large.  Follow along with the OSDEV [Cross Compiler](https://wiki.osdev.org/GCC_Cross-Compiler) tutorial to build compile the CC for your build.
 
-###Setup and Build###
+### Setup and Build
 
 1. ***Clone the Repository:***
 
@@ -51,7 +51,7 @@ mv myos.iso $PREFIX/ISOs
 qemu-system-i386 -cdrom myos.iso
 ```
 
-###Contributing###
+### Contributing
 
 Contributions are welcome! Please follow the standard fork-and-pull workflow:
 
@@ -63,10 +63,10 @@ Make changes and commit.
 
 Submit a pull request for review.
 
-###License###
+### License
 
 This project is licensed under the GPL-3.0 License. See LICENSE for more information.
 
-###Credits###
+### Credits
 
 This project is inspired by the tutorials from OSDEV.org.
