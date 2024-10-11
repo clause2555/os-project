@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
+#define restrict __restrict__
 extern "C" {
 #endif
 

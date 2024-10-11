@@ -6,6 +6,7 @@
 #define EOF (-1)
 
 #ifdef __cplusplus
+#define restrict __restrict__
 extern "C" {
 #endif
 

@@ -2,7 +2,7 @@
 
 #include <kernel/tty.h>
 
-void extern "C" kernel_main(void) {
+extern "C" void kernel_main(void) {
 	terminal_initialize();
-	printf("Hellow, kernel World!\n")
+	printf("Hello, c++ kernel World!\n");
 }

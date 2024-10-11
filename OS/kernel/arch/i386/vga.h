@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+#ifndef __cplusplus
+#define restrict __restrict__
+extern "C" {
+#endif
+
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
@@ -29,5 +34,9 @@ static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
 static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {
 	return (uint16_t) uc | (uint16_t) color << 8;
 }
+
+#ifndef __cplusplus
+}
+#endif
 
 #endif
