@@ -1,0 +1,19 @@
+sort.o: ../../../gcc/gcc-14.2.0/gcc/sort.cc config.h auto-host.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/system.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/filenames.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h \
+ ../../../gcc/gcc-14.2.0/gcc/hwint.h
+config.h:
+auto-host.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/system.h:
+../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h:
+../../../gcc/gcc-14.2.0/gcc/../include/filenames.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h:
+../../../gcc/gcc-14.2.0/gcc/hwint.h:

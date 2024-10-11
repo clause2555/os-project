@@ -1,0 +1,23 @@
+floatbitintdf.o: \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/floatbitintdf.c \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/soft-fp.h sfp-machine.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/config/i386/32/sfp-machine.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-1.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-2.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-4.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-8.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-common.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/longlong.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/double.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/soft-fp/bitint.h
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/soft-fp.h:
+sfp-machine.h:
+../../../../gcc/gcc-14.2.0/libgcc/config/i386/32/sfp-machine.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-1.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-2.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-4.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-8.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/op-common.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/longlong.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/double.h:
+../../../../gcc/gcc-14.2.0/libgcc/soft-fp/bitint.h:

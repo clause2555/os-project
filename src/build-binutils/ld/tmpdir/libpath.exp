@@ -1,0 +1,1 @@
+set libpath "=/home/aidan/os-project/cross-compiler/i686-elf/lib =/usr/local/lib =/lib =/usr/lib"

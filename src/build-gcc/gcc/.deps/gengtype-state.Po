@@ -1,0 +1,25 @@
+gengtype-state.o: ../../../gcc/gcc-14.2.0/gcc/gengtype-state.cc config.h \
+ auto-host.h ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/system.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/filenames.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h \
+ ../../../gcc/gcc-14.2.0/gcc/hwint.h ../../../gcc/gcc-14.2.0/gcc/errors.h \
+ version.h ../../../gcc/gcc-14.2.0/gcc/../include/obstack.h \
+ ../../../gcc/gcc-14.2.0/gcc/gengtype.h
+config.h:
+auto-host.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/system.h:
+../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h:
+../../../gcc/gcc-14.2.0/gcc/../include/filenames.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h:
+../../../gcc/gcc-14.2.0/gcc/hwint.h:
+../../../gcc/gcc-14.2.0/gcc/errors.h:
+version.h:
+../../../gcc/gcc-14.2.0/gcc/../include/obstack.h:
+../../../gcc/gcc-14.2.0/gcc/gengtype.h:

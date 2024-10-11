@@ -1,0 +1,162 @@
+c-family/known-headers.o: \
+ ../../../gcc/gcc-14.2.0/gcc/c-family/known-headers.cc config.h \
+ auto-host.h ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/system.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/filenames.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h \
+ ../../../gcc/gcc-14.2.0/gcc/hwint.h \
+ ../../../gcc/gcc-14.2.0/gcc/coretypes.h insn-modes.h \
+ ../../../gcc/gcc-14.2.0/gcc/signop.h \
+ ../../../gcc/gcc-14.2.0/gcc/wide-int.h \
+ ../../../gcc/gcc-14.2.0/gcc/wide-int-print.h \
+ ../../../gcc/gcc-14.2.0/gcc/poly-int.h \
+ ../../../gcc/gcc-14.2.0/gcc/poly-int-types.h insn-modes-inline.h \
+ ../../../gcc/gcc-14.2.0/gcc/machmode.h \
+ ../../../gcc/gcc-14.2.0/gcc/mode-classes.def \
+ ../../../gcc/gcc-14.2.0/gcc/double-int.h \
+ ../../../gcc/gcc-14.2.0/gcc/align.h \
+ ../../../gcc/gcc-14.2.0/gcc/iterator-utils.h \
+ ../../../gcc/gcc-14.2.0/gcc/real.h \
+ ../../../gcc/gcc-14.2.0/gcc/fixed-value.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-table.h \
+ ../../../gcc/gcc-14.2.0/gcc/statistics.h \
+ ../../../gcc/gcc-14.2.0/gcc/ggc.h gtype-desc.h \
+ ../../../gcc/gcc-14.2.0/gcc/vec.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/inchash.h \
+ ../../../gcc/gcc-14.2.0/gcc/mem-stats-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-map-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/mem-stats.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-set.h \
+ ../../../gcc/gcc-14.2.0/gcc/input.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/is-a.h \
+ ../../../gcc/gcc-14.2.0/gcc/memory-block.h \
+ ../../../gcc/gcc-14.2.0/gcc/dumpfile.h \
+ ../../../gcc/gcc-14.2.0/gcc/profile-count.h \
+ ../../../gcc/gcc-14.2.0/gcc/c-family/c-common.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/splay-tree.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/cpplib.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/obstack.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/alias.h ../../../gcc/gcc-14.2.0/gcc/tree.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-core.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h all-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/c-family/c-common.def \
+ ../../../gcc/gcc-14.2.0/gcc/ada/gcc-interface/ada-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/c/c-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/cp/cp-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/d/d-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/m2/m2-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/objc/objc-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/sync-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/omp-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/gtm-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/sanitizer.def \
+ ../../../gcc/gcc-14.2.0/gcc/coroutine-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/internal-fn.def \
+ ../../../gcc/gcc-14.2.0/gcc/treestruct.def options.h \
+ ../../../gcc/gcc-14.2.0/gcc/flag-types.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/i386-opts.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/stringop.def tree-check.h \
+ ../../../gcc/gcc-14.2.0/gcc/fold-const.h \
+ ../../../gcc/gcc-14.2.0/gcc/wide-int-bitmask.h \
+ ../../../gcc/gcc-14.2.0/gcc/diagnostic-core.h bversion.h \
+ ../../../gcc/gcc-14.2.0/gcc/diagnostic.def \
+ ../../../gcc/gcc-14.2.0/gcc/c-family/name-hint.h \
+ ../../../gcc/gcc-14.2.0/gcc/c-family/known-headers.h \
+ ../../../gcc/gcc-14.2.0/gcc/gcc-rich-location.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/rich-location.h
+config.h:
+auto-host.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/system.h:
+../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h:
+../../../gcc/gcc-14.2.0/gcc/../include/filenames.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h:
+../../../gcc/gcc-14.2.0/gcc/hwint.h:
+../../../gcc/gcc-14.2.0/gcc/coretypes.h:
+insn-modes.h:
+../../../gcc/gcc-14.2.0/gcc/signop.h:
+../../../gcc/gcc-14.2.0/gcc/wide-int.h:
+../../../gcc/gcc-14.2.0/gcc/wide-int-print.h:
+../../../gcc/gcc-14.2.0/gcc/poly-int.h:
+../../../gcc/gcc-14.2.0/gcc/poly-int-types.h:
+insn-modes-inline.h:
+../../../gcc/gcc-14.2.0/gcc/machmode.h:
+../../../gcc/gcc-14.2.0/gcc/mode-classes.def:
+../../../gcc/gcc-14.2.0/gcc/double-int.h:
+../../../gcc/gcc-14.2.0/gcc/align.h:
+../../../gcc/gcc-14.2.0/gcc/iterator-utils.h:
+../../../gcc/gcc-14.2.0/gcc/real.h:
+../../../gcc/gcc-14.2.0/gcc/fixed-value.h:
+../../../gcc/gcc-14.2.0/gcc/hash-table.h:
+../../../gcc/gcc-14.2.0/gcc/statistics.h:
+../../../gcc/gcc-14.2.0/gcc/ggc.h:
+gtype-desc.h:
+../../../gcc/gcc-14.2.0/gcc/vec.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/inchash.h:
+../../../gcc/gcc-14.2.0/gcc/mem-stats-traits.h:
+../../../gcc/gcc-14.2.0/gcc/hash-traits.h:
+../../../gcc/gcc-14.2.0/gcc/hash-map-traits.h:
+../../../gcc/gcc-14.2.0/gcc/mem-stats.h:
+../../../gcc/gcc-14.2.0/gcc/hash-map.h:
+../../../gcc/gcc-14.2.0/gcc/hash-set.h:
+../../../gcc/gcc-14.2.0/gcc/input.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h:
+../../../gcc/gcc-14.2.0/gcc/is-a.h:
+../../../gcc/gcc-14.2.0/gcc/memory-block.h:
+../../../gcc/gcc-14.2.0/gcc/dumpfile.h:
+../../../gcc/gcc-14.2.0/gcc/profile-count.h:
+../../../gcc/gcc-14.2.0/gcc/c-family/c-common.h:
+../../../gcc/gcc-14.2.0/gcc/../include/splay-tree.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/cpplib.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/obstack.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h:
+../../../gcc/gcc-14.2.0/gcc/alias.h:
+../../../gcc/gcc-14.2.0/gcc/tree.h:
+../../../gcc/gcc-14.2.0/gcc/tree-core.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h:
+all-tree.def:
+../../../gcc/gcc-14.2.0/gcc/tree.def:
+../../../gcc/gcc-14.2.0/gcc/c-family/c-common.def:
+../../../gcc/gcc-14.2.0/gcc/ada/gcc-interface/ada-tree.def:
+../../../gcc/gcc-14.2.0/gcc/c/c-tree.def:
+../../../gcc/gcc-14.2.0/gcc/cp/cp-tree.def:
+../../../gcc/gcc-14.2.0/gcc/d/d-tree.def:
+../../../gcc/gcc-14.2.0/gcc/m2/m2-tree.def:
+../../../gcc/gcc-14.2.0/gcc/objc/objc-tree.def:
+../../../gcc/gcc-14.2.0/gcc/builtins.def:
+../../../gcc/gcc-14.2.0/gcc/sync-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/omp-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/gtm-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/sanitizer.def:
+../../../gcc/gcc-14.2.0/gcc/coroutine-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/internal-fn.def:
+../../../gcc/gcc-14.2.0/gcc/treestruct.def:
+options.h:
+../../../gcc/gcc-14.2.0/gcc/flag-types.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/i386-opts.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/stringop.def:
+tree-check.h:
+../../../gcc/gcc-14.2.0/gcc/fold-const.h:
+../../../gcc/gcc-14.2.0/gcc/wide-int-bitmask.h:
+../../../gcc/gcc-14.2.0/gcc/diagnostic-core.h:
+bversion.h:
+../../../gcc/gcc-14.2.0/gcc/diagnostic.def:
+../../../gcc/gcc-14.2.0/gcc/c-family/name-hint.h:
+../../../gcc/gcc-14.2.0/gcc/c-family/known-headers.h:
+../../../gcc/gcc-14.2.0/gcc/gcc-rich-location.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/rich-location.h:

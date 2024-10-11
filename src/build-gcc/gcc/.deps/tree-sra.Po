@@ -1,0 +1,300 @@
+tree-sra.o: ../../../gcc/gcc-14.2.0/gcc/tree-sra.cc config.h auto-host.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/system.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/filenames.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h \
+ ../../../gcc/gcc-14.2.0/gcc/hwint.h \
+ ../../../gcc/gcc-14.2.0/gcc/coretypes.h insn-modes.h \
+ ../../../gcc/gcc-14.2.0/gcc/signop.h \
+ ../../../gcc/gcc-14.2.0/gcc/wide-int.h \
+ ../../../gcc/gcc-14.2.0/gcc/wide-int-print.h \
+ ../../../gcc/gcc-14.2.0/gcc/poly-int.h \
+ ../../../gcc/gcc-14.2.0/gcc/poly-int-types.h insn-modes-inline.h \
+ ../../../gcc/gcc-14.2.0/gcc/machmode.h \
+ ../../../gcc/gcc-14.2.0/gcc/mode-classes.def \
+ ../../../gcc/gcc-14.2.0/gcc/double-int.h \
+ ../../../gcc/gcc-14.2.0/gcc/align.h \
+ ../../../gcc/gcc-14.2.0/gcc/iterator-utils.h \
+ ../../../gcc/gcc-14.2.0/gcc/real.h \
+ ../../../gcc/gcc-14.2.0/gcc/fixed-value.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-table.h \
+ ../../../gcc/gcc-14.2.0/gcc/statistics.h \
+ ../../../gcc/gcc-14.2.0/gcc/ggc.h gtype-desc.h \
+ ../../../gcc/gcc-14.2.0/gcc/vec.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/inchash.h \
+ ../../../gcc/gcc-14.2.0/gcc/mem-stats-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-map-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/mem-stats.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/hash-set.h \
+ ../../../gcc/gcc-14.2.0/gcc/input.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/is-a.h \
+ ../../../gcc/gcc-14.2.0/gcc/memory-block.h \
+ ../../../gcc/gcc-14.2.0/gcc/dumpfile.h \
+ ../../../gcc/gcc-14.2.0/gcc/profile-count.h \
+ ../../../gcc/gcc-14.2.0/gcc/backend.h tm.h options.h \
+ ../../../gcc/gcc-14.2.0/gcc/flag-types.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/i386-opts.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/stringop.def insn-constants.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/vxworks-dummy.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/i386.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/x86-tune.def \
+ ../../../gcc/gcc-14.2.0/gcc/wide-int-bitmask.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/i386-isa.def insn-attr-common.h \
+ ../../../gcc/gcc-14.2.0/gcc/common/config/i386/i386-cpuinfo.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/unix.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/att.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/elfos.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/newlib-stdint.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/i386/i386elf.h \
+ ../../../gcc/gcc-14.2.0/gcc/config/initfini-array.h insn-flags.h \
+ insn-modes.h ../../../gcc/gcc-14.2.0/gcc/defaults.h \
+ ../../../gcc/gcc-14.2.0/gcc/function.h \
+ ../../../gcc/gcc-14.2.0/gcc/bitmap.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/obstack.h \
+ ../../../gcc/gcc-14.2.0/gcc/array-traits.h \
+ ../../../gcc/gcc-14.2.0/gcc/sbitmap.h \
+ ../../../gcc/gcc-14.2.0/gcc/basic-block.h \
+ ../../../gcc/gcc-14.2.0/gcc/profile-count.h \
+ ../../../gcc/gcc-14.2.0/gcc/cfg-flags.def \
+ ../../../gcc/gcc-14.2.0/gcc/cfg.h \
+ ../../../gcc/gcc-14.2.0/gcc/dominance.h \
+ ../../../gcc/gcc-14.2.0/gcc/target.h insn-codes.h \
+ ../../../gcc/gcc-14.2.0/gcc/hard-reg-set.h \
+ ../../../gcc/gcc-14.2.0/gcc/target.def \
+ ../../../gcc/gcc-14.2.0/gcc/target-hooks-macros.h \
+ ../../../gcc/gcc-14.2.0/gcc/target-insns.def \
+ ../../../gcc/gcc-14.2.0/gcc/rtl.h ../../../gcc/gcc-14.2.0/gcc/rtl.def \
+ ../../../gcc/gcc-14.2.0/gcc/reg-notes.def \
+ ../../../gcc/gcc-14.2.0/gcc/insn-notes.def genrtl.h \
+ ../../../gcc/gcc-14.2.0/gcc/statistics.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-core.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h all-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/c-family/c-common.def \
+ ../../../gcc/gcc-14.2.0/gcc/ada/gcc-interface/ada-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/c/c-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/cp/cp-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/d/d-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/m2/m2-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/objc/objc-tree.def \
+ ../../../gcc/gcc-14.2.0/gcc/builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/sync-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/omp-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/gtm-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/sanitizer.def \
+ ../../../gcc/gcc-14.2.0/gcc/coroutine-builtins.def \
+ ../../../gcc/gcc-14.2.0/gcc/internal-fn.def \
+ ../../../gcc/gcc-14.2.0/gcc/treestruct.def options.h tree-check.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimple.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-ssa-alias.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimple-expr.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimple.def \
+ ../../../gcc/gcc-14.2.0/gcc/gsstruct.def \
+ ../../../gcc/gcc-14.2.0/gcc/predict.h \
+ ../../../gcc/gcc-14.2.0/gcc/predict.def \
+ ../../../gcc/gcc-14.2.0/gcc/alloc-pool.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-pass.h \
+ ../../../gcc/gcc-14.2.0/gcc/timevar.h \
+ ../../../gcc/gcc-14.2.0/gcc/timevar.def \
+ ../../../gcc/gcc-14.2.0/gcc/ssa.h \
+ ../../../gcc/gcc-14.2.0/gcc/stringpool.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimple-ssa.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-ssa-operands.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-vrp.h \
+ ../../../gcc/gcc-14.2.0/gcc/value-range.h \
+ ../../../gcc/gcc-14.2.0/gcc/range.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-ssanames.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-phinodes.h \
+ ../../../gcc/gcc-14.2.0/gcc/ssa-iterators.h \
+ ../../../gcc/gcc-14.2.0/gcc/cgraph.h \
+ ../../../gcc/gcc-14.2.0/gcc/ipa-ref.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/plugin-api.h \
+ ../../../gcc/gcc-14.2.0/gcc/ipa-param-manipulation.h \
+ ../../../gcc/gcc-14.2.0/gcc/cif-code.def \
+ ../../../gcc/gcc-14.2.0/gcc/gimple-pretty-print.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-pretty-print.h \
+ ../../../gcc/gcc-14.2.0/gcc/pretty-print.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/rich-location.h \
+ ../../../gcc/gcc-14.2.0/gcc/diagnostic-url.h \
+ ../../../gcc/gcc-14.2.0/gcc/alias.h \
+ ../../../gcc/gcc-14.2.0/gcc/fold-const.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-eh.h \
+ ../../../gcc/gcc-14.2.0/gcc/stor-layout.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimplify.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimple-iterator.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimplify-me.h \
+ ../../../gcc/gcc-14.2.0/gcc/gimple-walk.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-cfg.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-dfa.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-ssa.h \
+ ../../../gcc/gcc-14.2.0/gcc/dbgcnt.h \
+ ../../../gcc/gcc-14.2.0/gcc/dbgcnt.def \
+ ../../../gcc/gcc-14.2.0/gcc/builtins.h \
+ ../../../gcc/gcc-14.2.0/gcc/tree-sra.h \
+ ../../../gcc/gcc-14.2.0/gcc/opts.h
+config.h:
+auto-host.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/system.h:
+../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h:
+../../../gcc/gcc-14.2.0/gcc/../include/filenames.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h:
+../../../gcc/gcc-14.2.0/gcc/hwint.h:
+../../../gcc/gcc-14.2.0/gcc/coretypes.h:
+insn-modes.h:
+../../../gcc/gcc-14.2.0/gcc/signop.h:
+../../../gcc/gcc-14.2.0/gcc/wide-int.h:
+../../../gcc/gcc-14.2.0/gcc/wide-int-print.h:
+../../../gcc/gcc-14.2.0/gcc/poly-int.h:
+../../../gcc/gcc-14.2.0/gcc/poly-int-types.h:
+insn-modes-inline.h:
+../../../gcc/gcc-14.2.0/gcc/machmode.h:
+../../../gcc/gcc-14.2.0/gcc/mode-classes.def:
+../../../gcc/gcc-14.2.0/gcc/double-int.h:
+../../../gcc/gcc-14.2.0/gcc/align.h:
+../../../gcc/gcc-14.2.0/gcc/iterator-utils.h:
+../../../gcc/gcc-14.2.0/gcc/real.h:
+../../../gcc/gcc-14.2.0/gcc/fixed-value.h:
+../../../gcc/gcc-14.2.0/gcc/hash-table.h:
+../../../gcc/gcc-14.2.0/gcc/statistics.h:
+../../../gcc/gcc-14.2.0/gcc/ggc.h:
+gtype-desc.h:
+../../../gcc/gcc-14.2.0/gcc/vec.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/inchash.h:
+../../../gcc/gcc-14.2.0/gcc/mem-stats-traits.h:
+../../../gcc/gcc-14.2.0/gcc/hash-traits.h:
+../../../gcc/gcc-14.2.0/gcc/hash-map-traits.h:
+../../../gcc/gcc-14.2.0/gcc/mem-stats.h:
+../../../gcc/gcc-14.2.0/gcc/hash-map.h:
+../../../gcc/gcc-14.2.0/gcc/hash-set.h:
+../../../gcc/gcc-14.2.0/gcc/input.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h:
+../../../gcc/gcc-14.2.0/gcc/is-a.h:
+../../../gcc/gcc-14.2.0/gcc/memory-block.h:
+../../../gcc/gcc-14.2.0/gcc/dumpfile.h:
+../../../gcc/gcc-14.2.0/gcc/profile-count.h:
+../../../gcc/gcc-14.2.0/gcc/backend.h:
+tm.h:
+options.h:
+../../../gcc/gcc-14.2.0/gcc/flag-types.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/i386-opts.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/stringop.def:
+insn-constants.h:
+../../../gcc/gcc-14.2.0/gcc/config/vxworks-dummy.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/i386.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/x86-tune.def:
+../../../gcc/gcc-14.2.0/gcc/wide-int-bitmask.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/i386-isa.def:
+insn-attr-common.h:
+../../../gcc/gcc-14.2.0/gcc/common/config/i386/i386-cpuinfo.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/unix.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/att.h:
+../../../gcc/gcc-14.2.0/gcc/config/elfos.h:
+../../../gcc/gcc-14.2.0/gcc/config/newlib-stdint.h:
+../../../gcc/gcc-14.2.0/gcc/config/i386/i386elf.h:
+../../../gcc/gcc-14.2.0/gcc/config/initfini-array.h:
+insn-flags.h:
+insn-modes.h:
+../../../gcc/gcc-14.2.0/gcc/defaults.h:
+../../../gcc/gcc-14.2.0/gcc/function.h:
+../../../gcc/gcc-14.2.0/gcc/bitmap.h:
+../../../gcc/gcc-14.2.0/gcc/../include/obstack.h:
+../../../gcc/gcc-14.2.0/gcc/array-traits.h:
+../../../gcc/gcc-14.2.0/gcc/sbitmap.h:
+../../../gcc/gcc-14.2.0/gcc/basic-block.h:
+../../../gcc/gcc-14.2.0/gcc/profile-count.h:
+../../../gcc/gcc-14.2.0/gcc/cfg-flags.def:
+../../../gcc/gcc-14.2.0/gcc/cfg.h:
+../../../gcc/gcc-14.2.0/gcc/dominance.h:
+../../../gcc/gcc-14.2.0/gcc/target.h:
+insn-codes.h:
+../../../gcc/gcc-14.2.0/gcc/hard-reg-set.h:
+../../../gcc/gcc-14.2.0/gcc/target.def:
+../../../gcc/gcc-14.2.0/gcc/target-hooks-macros.h:
+../../../gcc/gcc-14.2.0/gcc/target-insns.def:
+../../../gcc/gcc-14.2.0/gcc/rtl.h:
+../../../gcc/gcc-14.2.0/gcc/rtl.def:
+../../../gcc/gcc-14.2.0/gcc/reg-notes.def:
+../../../gcc/gcc-14.2.0/gcc/insn-notes.def:
+genrtl.h:
+../../../gcc/gcc-14.2.0/gcc/statistics.h:
+../../../gcc/gcc-14.2.0/gcc/tree.h:
+../../../gcc/gcc-14.2.0/gcc/tree-core.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h:
+all-tree.def:
+../../../gcc/gcc-14.2.0/gcc/tree.def:
+../../../gcc/gcc-14.2.0/gcc/c-family/c-common.def:
+../../../gcc/gcc-14.2.0/gcc/ada/gcc-interface/ada-tree.def:
+../../../gcc/gcc-14.2.0/gcc/c/c-tree.def:
+../../../gcc/gcc-14.2.0/gcc/cp/cp-tree.def:
+../../../gcc/gcc-14.2.0/gcc/d/d-tree.def:
+../../../gcc/gcc-14.2.0/gcc/m2/m2-tree.def:
+../../../gcc/gcc-14.2.0/gcc/objc/objc-tree.def:
+../../../gcc/gcc-14.2.0/gcc/builtins.def:
+../../../gcc/gcc-14.2.0/gcc/sync-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/omp-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/gtm-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/sanitizer.def:
+../../../gcc/gcc-14.2.0/gcc/coroutine-builtins.def:
+../../../gcc/gcc-14.2.0/gcc/internal-fn.def:
+../../../gcc/gcc-14.2.0/gcc/treestruct.def:
+options.h:
+tree-check.h:
+../../../gcc/gcc-14.2.0/gcc/gimple.h:
+../../../gcc/gcc-14.2.0/gcc/tree-ssa-alias.h:
+../../../gcc/gcc-14.2.0/gcc/gimple-expr.h:
+../../../gcc/gcc-14.2.0/gcc/gimple.def:
+../../../gcc/gcc-14.2.0/gcc/gsstruct.def:
+../../../gcc/gcc-14.2.0/gcc/predict.h:
+../../../gcc/gcc-14.2.0/gcc/predict.def:
+../../../gcc/gcc-14.2.0/gcc/alloc-pool.h:
+../../../gcc/gcc-14.2.0/gcc/tree-pass.h:
+../../../gcc/gcc-14.2.0/gcc/timevar.h:
+../../../gcc/gcc-14.2.0/gcc/timevar.def:
+../../../gcc/gcc-14.2.0/gcc/ssa.h:
+../../../gcc/gcc-14.2.0/gcc/stringpool.h:
+../../../gcc/gcc-14.2.0/gcc/gimple-ssa.h:
+../../../gcc/gcc-14.2.0/gcc/tree-ssa-operands.h:
+../../../gcc/gcc-14.2.0/gcc/tree-vrp.h:
+../../../gcc/gcc-14.2.0/gcc/value-range.h:
+../../../gcc/gcc-14.2.0/gcc/range.h:
+../../../gcc/gcc-14.2.0/gcc/tree-ssanames.h:
+../../../gcc/gcc-14.2.0/gcc/tree-phinodes.h:
+../../../gcc/gcc-14.2.0/gcc/ssa-iterators.h:
+../../../gcc/gcc-14.2.0/gcc/cgraph.h:
+../../../gcc/gcc-14.2.0/gcc/ipa-ref.h:
+../../../gcc/gcc-14.2.0/gcc/../include/plugin-api.h:
+../../../gcc/gcc-14.2.0/gcc/ipa-param-manipulation.h:
+../../../gcc/gcc-14.2.0/gcc/cif-code.def:
+../../../gcc/gcc-14.2.0/gcc/gimple-pretty-print.h:
+../../../gcc/gcc-14.2.0/gcc/tree-pretty-print.h:
+../../../gcc/gcc-14.2.0/gcc/pretty-print.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/rich-location.h:
+../../../gcc/gcc-14.2.0/gcc/diagnostic-url.h:
+../../../gcc/gcc-14.2.0/gcc/alias.h:
+../../../gcc/gcc-14.2.0/gcc/fold-const.h:
+../../../gcc/gcc-14.2.0/gcc/tree-eh.h:
+../../../gcc/gcc-14.2.0/gcc/stor-layout.h:
+../../../gcc/gcc-14.2.0/gcc/gimplify.h:
+../../../gcc/gcc-14.2.0/gcc/gimple-iterator.h:
+../../../gcc/gcc-14.2.0/gcc/gimplify-me.h:
+../../../gcc/gcc-14.2.0/gcc/gimple-walk.h:
+../../../gcc/gcc-14.2.0/gcc/tree-cfg.h:
+../../../gcc/gcc-14.2.0/gcc/tree-dfa.h:
+../../../gcc/gcc-14.2.0/gcc/tree-ssa.h:
+../../../gcc/gcc-14.2.0/gcc/dbgcnt.h:
+../../../gcc/gcc-14.2.0/gcc/dbgcnt.def:
+../../../gcc/gcc-14.2.0/gcc/builtins.h:
+../../../gcc/gcc-14.2.0/gcc/tree-sra.h:
+../../../gcc/gcc-14.2.0/gcc/opts.h:

@@ -1,0 +1,9 @@
+flonum-konst.o: ../../../binutils/binutils-2.42.90/gas/flonum-konst.c \
+ /usr/include/stdc-predef.h \
+ ../../../binutils/binutils-2.42.90/gas/../include/ansidecl.h \
+ ../../../binutils/binutils-2.42.90/gas/flonum.h \
+ ../../../binutils/binutils-2.42.90/gas/bignum.h
+/usr/include/stdc-predef.h:
+../../../binutils/binutils-2.42.90/gas/../include/ansidecl.h:
+../../../binutils/binutils-2.42.90/gas/flonum.h:
+../../../binutils/binutils-2.42.90/gas/bignum.h:

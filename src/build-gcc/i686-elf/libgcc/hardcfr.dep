@@ -1,0 +1,5 @@
+hardcfr.o: ../../../../gcc/gcc-14.2.0/libgcc/hardcfr.c \
+ /home/aidan/os-project/src/build-gcc/gcc/include/stddef.h \
+ /home/aidan/os-project/src/build-gcc/gcc/include/stdbool.h
+/home/aidan/os-project/src/build-gcc/gcc/include/stddef.h:
+/home/aidan/os-project/src/build-gcc/gcc/include/stdbool.h:

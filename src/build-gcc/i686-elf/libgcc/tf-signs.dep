@@ -1,0 +1,1 @@
+tf-signs.o: ../../../../gcc/gcc-14.2.0/libgcc/config/i386/32/tf-signs.c

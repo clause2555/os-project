@@ -1,0 +1,18 @@
+symtab.o: ../../../../gcc/gcc-14.2.0/libcpp/symtab.cc config.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/system.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/../include/filenames.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/../include/hashtab.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/../include/ansidecl.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/../include/libiberty.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/../include/safe-ctype.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/include/symtab.h \
+ ../../../../gcc/gcc-14.2.0/libcpp/../include/obstack.h
+config.h:
+../../../../gcc/gcc-14.2.0/libcpp/system.h:
+../../../../gcc/gcc-14.2.0/libcpp/../include/filenames.h:
+../../../../gcc/gcc-14.2.0/libcpp/../include/hashtab.h:
+../../../../gcc/gcc-14.2.0/libcpp/../include/ansidecl.h:
+../../../../gcc/gcc-14.2.0/libcpp/../include/libiberty.h:
+../../../../gcc/gcc-14.2.0/libcpp/../include/safe-ctype.h:
+../../../../gcc/gcc-14.2.0/libcpp/include/symtab.h:
+../../../../gcc/gcc-14.2.0/libcpp/../include/obstack.h:

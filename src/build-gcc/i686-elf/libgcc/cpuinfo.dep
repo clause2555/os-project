@@ -1,0 +1,20 @@
+cpuinfo.o: ../../../../gcc/gcc-14.2.0/libgcc/config/i386/cpuinfo.c \
+ /home/aidan/os-project/src/build-gcc/gcc/include/cpuid.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../gcc/tsystem.h \
+ /home/aidan/os-project/src/build-gcc/gcc/include/stddef.h \
+ /home/aidan/os-project/src/build-gcc/gcc/include/float.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/filenames.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/hashtab.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/ansidecl.h auto-target.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../gcc/common/config/i386/i386-cpuinfo.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../gcc/common/config/i386/cpuinfo.h
+/home/aidan/os-project/src/build-gcc/gcc/include/cpuid.h:
+../../../../gcc/gcc-14.2.0/libgcc/../gcc/tsystem.h:
+/home/aidan/os-project/src/build-gcc/gcc/include/stddef.h:
+/home/aidan/os-project/src/build-gcc/gcc/include/float.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/filenames.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/hashtab.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/ansidecl.h:
+auto-target.h:
+../../../../gcc/gcc-14.2.0/libgcc/../gcc/common/config/i386/i386-cpuinfo.h:
+../../../../gcc/gcc-14.2.0/libgcc/../gcc/common/config/i386/cpuinfo.h:

@@ -1,0 +1,46 @@
+cp/mapper-client.o: ../../../gcc/gcc-14.2.0/gcc/cp/mapper-client.cc \
+ config.h auto-host.h ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/system.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/filenames.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h \
+ ../../../gcc/gcc-14.2.0/gcc/hwint.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/rich-location.h \
+ ../../../gcc/gcc-14.2.0/gcc/diagnostic-core.h bversion.h \
+ ../../../gcc/gcc-14.2.0/gcc/diagnostic.def \
+ ../../../gcc/gcc-14.2.0/gcc/cp/mapper-client.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcody/cody.hh \
+ ../../../gcc/gcc-14.2.0/gcc/intl.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/mkdeps.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/cpplib.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h \
+ ../../../gcc/gcc-14.2.0/gcc/../include/obstack.h \
+ ../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h \
+ ../../../gcc/gcc-14.2.0/gcc/cp/../../c++tools/resolver.h
+config.h:
+auto-host.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/system.h:
+../../../gcc/gcc-14.2.0/gcc/../include/safe-ctype.h:
+../../../gcc/gcc-14.2.0/gcc/../include/filenames.h:
+../../../gcc/gcc-14.2.0/gcc/../include/hashtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/ansidecl.h:
+../../../gcc/gcc-14.2.0/gcc/../include/libiberty.h:
+../../../gcc/gcc-14.2.0/gcc/hwint.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/rich-location.h:
+../../../gcc/gcc-14.2.0/gcc/diagnostic-core.h:
+bversion.h:
+../../../gcc/gcc-14.2.0/gcc/diagnostic.def:
+../../../gcc/gcc-14.2.0/gcc/cp/mapper-client.h:
+../../../gcc/gcc-14.2.0/gcc/../libcody/cody.hh:
+../../../gcc/gcc-14.2.0/gcc/intl.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/mkdeps.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/cpplib.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/symtab.h:
+../../../gcc/gcc-14.2.0/gcc/../include/obstack.h:
+../../../gcc/gcc-14.2.0/gcc/../libcpp/include/line-map.h:
+../../../gcc/gcc-14.2.0/gcc/cp/../../c++tools/resolver.h:

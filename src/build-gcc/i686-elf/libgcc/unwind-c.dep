@@ -1,0 +1,22 @@
+unwind-c.o: ../../../../gcc/gcc-14.2.0/libgcc/unwind-c.c \
+ ../.././gcc/tconfig.h ../.././gcc/auto-host.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/ansidecl.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../gcc/tsystem.h \
+ /home/aidan/os-project/src/build-gcc/gcc/include/stddef.h \
+ /home/aidan/os-project/src/build-gcc/gcc/include/float.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/filenames.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/hashtab.h \
+ ../../../../gcc/gcc-14.2.0/libgcc/../include/ansidecl.h auto-target.h \
+ unwind.h ../../../../gcc/gcc-14.2.0/libgcc/unwind-pe.h
+../.././gcc/tconfig.h:
+../.././gcc/auto-host.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/ansidecl.h:
+../../../../gcc/gcc-14.2.0/libgcc/../gcc/tsystem.h:
+/home/aidan/os-project/src/build-gcc/gcc/include/stddef.h:
+/home/aidan/os-project/src/build-gcc/gcc/include/float.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/filenames.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/hashtab.h:
+../../../../gcc/gcc-14.2.0/libgcc/../include/ansidecl.h:
+auto-target.h:
+unwind.h:
+../../../../gcc/gcc-14.2.0/libgcc/unwind-pe.h:

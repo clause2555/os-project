@@ -1,0 +1,5 @@
+@set version-GCC 14.2.0
+@clear DEVELOPMENT
+@set srcdir /home/aidan/os-project/src/build-gcc/gcc/../../../gcc/gcc-14.2.0/gcc
+@set VERSION_PACKAGE (GCC) 
+@set BUGURL @uref{https://gcc.gnu.org/bugs/}
