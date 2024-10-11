@@ -23,6 +23,7 @@ binutils/, gcc/: Compiler toolchain setup.
 src/: Source code for building the Cross-Compiler (Cross-Compiler files and binaries not included as they are very large.  Follow along with the OSDEV [Cross Compiler](https://wiki.osdev.org/GCC_Cross-Compiler) tutorial to build compile the CC for your build.
 
 ### Setup and Build
+#### Manually for barebones
 
 1. ***Clone the Repository:***
 
@@ -50,6 +51,28 @@ mv myos.iso $PREFIX/ISOs
 ```bash
 qemu-system-i386 -cdrom myos.iso
 ```
+
+#### Shell Scripting for the more complicated OS Skeleton
+##### Cross-Compling the Operating System
+The system is cross-compiled in the same manner as [Barebones](https://wiki.osdev.org/Bare_Bones), though with the complexity of having a system root with the final system and using a libk. In this example, we elected to use shell scripts to to the top-level build process, though you could possibly also use a makefile for that or a wholly different build system. Though, assuming this setup works for you, you can clean the source tree by invoking:
+
+```bash
+./clean.sh
+```
+You can install all the system headers intot he system root without relying on the compile at all, which will useful later when I begin working on switching to a [Hosted GCC Cross-Compiler](https://wiki.osdev.org/Hosted_GCC_Cross-Compiler), by invoking:
+
+```bash
+./headers.sh
+```
+You can build a bootable cdrom image of the OS by invoking:
+```bash
+./iso.sh
+```
+Build then launch short cut:
+```bash
+./qemu.sh
+```
+
 
 ### Contributing
 
