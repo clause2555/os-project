@@ -29,6 +29,11 @@ SECTIONS
 		*(.gdt_ptr)
 	}
 
+	/* IDT Section */
+	.idt : ALIGN(8) {
+		*(.idt)
+	}
+
 	.tss : ALIGN(8) {
 		tss_start = ABSOLUTE(.);
 		*(.tss)

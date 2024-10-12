@@ -29,7 +29,11 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
-kernel/kernel.o
+kernel/kernel.o \
+kernel/idt.o \
+kernel/interrupt_handler.o \
+kernel/handlers.o \
+kernel/pic.o \
 
 OBJS=\
 $(ARCHDIR)/crti.o \
@@ -48,7 +52,7 @@ $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
 
 .PHONY: all clean install install-headers install-kernel
-.SUFFIXES: .o .c .cpp .S
+.SUFFIXES: .o .c .cpp .S .asm
 
 all: myos.kernel
 
@@ -67,6 +71,9 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 
 .cpp.o:
 	$(CPP) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+
+.asm.o:
+	$(AS) -MD -c $< -o $@ 
 
 clean:
 	rm -f myos.kernel

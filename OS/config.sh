@@ -22,10 +22,14 @@ export CPPFLAGS='-std=c++11'
 export SYSROOT="$(pwd)/sysroot"
 export CC="$CC --sysroot=$SYSROOT"
 export CPP="$CPP --sysroot=$SYSROOT"
+#export AS="$AS --sysroot=$SYSROOT"
+#export AR="$AR --sysroot=$SYSROOT"
 
 # Work around that the -elf gcc targets does not have a system include directory
 # because it was configured with --without-headers rather than --with-sysroot
 if echo "$HOST" | grep -Eq -- '-elf($|-)'; then
   export CC="$CC -isystem=$INCLUDEDIR"
   export CPP="$CPP -isystem=$INCLUDEDIR"
+  #export AS="$AS -isystem=$INCLUDEDIR"
+  #export AR="$AR -isystem=$INCLUDEDIR"
 fi
