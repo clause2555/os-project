@@ -30,11 +30,124 @@ boot_page_table1:
 	.skip 4096
 # Further page tables may be required if the kernel grows beyond 3Mib (currently as 22Kib)
 
+/* Define the GDT entries */
+.section .gdt, "a", @progbits
+.align 8
+gdt_start:
+    /* NULL Descriptor */
+    	.quad 0x0000000000000000
+
+    /* Kernel Code Segment: base=0, limit=4G, code, executable, readable */
+    	.word 0xFFFF       /* Limit 0-15 */
+    	.word 0x0000       /* Base 0-15 */
+    	.byte 0x00         /* Base 16-23 */
+    	.byte 0x9A         /* Access byte: present, ring 0, code segment */
+    	.byte 0xCF         /* Flags: 4K granularity, 32-bit */
+    	.byte 0x00         /* Base 24-31 */
+
+    /* Kernel Data Segment: base=0, limit=4G, data, writable */
+    	.word 0xFFFF
+    	.word 0x0000
+    	.byte 0x00
+    	.byte 0x92         /* Access byte: present, ring 0, data segment */
+    	.byte 0xCF
+    	.byte 0x00
+
+    /* User Code Segment: base=0, limit=4G, code, executable, readable, DPL=3 */
+    	.word 0xFFFF
+    	.word 0x0000
+    	.byte 0x00
+    	.byte 0xFA         /* Access byte: present, ring 3, code segment */
+    	.byte 0xCF
+    	.byte 0x00
+
+    /* User Data Segment: base=0, limit=4G, data, writable, DPL=3 */
+    	.word 0xFFFF
+    	.word 0x0000
+    	.byte 0x00
+    	.byte 0xF2         /* Access byte: present, ring 3, data segment */
+    	.byte 0xCF
+    	.byte 0x00
+
+    /* TSS Descriptor */
+    /* Assuming TSS is defined in the .tss section below */
+    	.word tss_limit        /* Limit 0-15 */
+    	.word tss_base_low     /* Base 0-15 */
+    	.byte tss_base_mid     /* Base 16-23 */
+    	.byte 0x89             /* Access byte: present, type 9 (32-bit TSS) */
+    	.byte 0x00             /* Flags */
+    	.byte tss_base_high    /* Base 24-31 */
+
+gdt_end:
+.set gdt_size, gdt_end - gdt_start
+
+/* GDT Pointer */
+.section .gdt_ptr, "a", @progbits
+.align 8
+gdt_ptr:
+    	.word gdt_size - 1      /* Limit */
+    	.long gdt_start         /* Base */
+
+/* Task State Segment (TSS) */
+.section .tss, "aw", @progbits
+.align 8
+tss:
+    	.quad 0                  /* Previous TSS */
+    	.long stack_top          /* Stack pointer (ESP0) */
+    	.quad 0x10               /* Stack segment (SS0) - Kernel Data Segment Selector */
+    	.zero 104                /* Zero the rest of the TSS (total size 104 bytes) */
+
+tss_start:
+    /* TSS is defined above */
+	.quad 0                  /* Previous TSS */
+    	.long stack_top          /* ESP0 */
+    	.word 0x10               /* SS0: Kernel Data Segment Selector (0x10) */
+    	.word 0x0000             /* Reserved */
+    	.quad 0                  /* ESP1 */
+    	.quad 0                  /* SS1 */
+    	.quad 0                  /* ESP2 */
+    	.quad 0                  /* SS2 */
+    	.quad 0                  /* CR3 */
+    	.quad 0                  /* EIP */
+    	.quad 0                  /* EFLAGS */
+    	.quad 0                  /* ESP */
+    	.quad 0                  /* SS */
+    /* The rest of the TSS should be zeroed */
+    	.zero 80                /* Total TSS size is 104 bytes (0x68) */
+tss_end:
+
+/* Calculate TSS fields for the descriptor */
+.extern tss_limit
+.extern tss_base_low
+.extern tss_base_mid
+.extern tss_base_high
+
 # The kernel entry point.
 .section .multiboot.text, "a"
 .global _start
 .type _start, @function
 _start:
+	# Load GDT
+	lgdt gdt_ptr
+
+	# Reload segent registers
+	mov $0x10, %ax
+	mov %ax, %ds
+	mov %ax, %es
+	mov %ax, %fs
+	mov %ax, %gs
+	mov %ax, %ss
+
+	# Reload CS
+	ljmp $0x08, $reload_cs
+
+reload_cs:
+	#init TSS
+	cli
+	mov $0x28, %ax
+	ltr %ax
+	sti
+
 	# Physical address of boot_page_table1.
 	# TODO: Assembly that uses a macro to do conversion to and from phyical, could be done here?
 	#
