@@ -1,5 +1,6 @@
 /* interrupts.S */
 .section .idt, "aw", @progbits
+.align 8
 .global idt_load
 .type idt_load, @function
 idt_load:
