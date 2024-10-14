@@ -28,11 +28,7 @@ SECTIONS
 	.gdt_ptr : ALIGN(8) {
 		*(.gdt_ptr)
 	}
-	/*
-	.idt : ALIGN(8) {
-		*(.idt)
-	}
-	*/
+
 	.tss : ALIGN(8) {
 		tss_start = ABSOLUTE(.);
 		*(.tss)
@@ -45,9 +41,9 @@ SECTIONS
 	tss_base_mid = (tss_start >> 16) & 0xFF;
 	tss_base_high = (tss_start >> 24) & 0xFF;
 
+	/* Move address space to higher half */
 	. += 0xC0000000;
 	_kernel_start = .;
-
 
 	/* map IDT to higher half */
 	.idt ALIGN(8) : AT(ADDR(.idt) - 0xC0000000)
@@ -73,10 +69,6 @@ SECTIONS
 		*(COMMON)
 		*(.bss*)
 		*(.bootstrap_stack)
-		/* boot_page_directory = .; */
-		/*. += 0x1000;  reserver space for the page directory */
-		/* boot_page_table1 = .; /* Next Page after page dir */
-		/* += 0x1000; /* reserver space for the first page table */
 		_bss_end = .;
 	}
 	/* Add a symble the indicates the end address of the kernel. */
