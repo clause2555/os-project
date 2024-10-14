@@ -1,64 +1,37 @@
 #include <string.h>
 #include "kernel/idt.h"
 
-// Define 256 IDT entries and the IDT pointer
-IDTEntry idt_entries[256] __attribute__((aligned(16)));
-IDTPointer idt_ptr;
+// Create an aligned array of IDT entries
+__attribute__((aligned(0x10)))
+static idt_entry_t idt[IDT_MAX_DESCRIPTORS];
 
-void (*interrupt_handlers[256])() = { nullptr };
-void (*interrupt_handlers_with_error_code[256])(uint32_t) = { nullptr };
+// Define an IDTR structure
+static idtr_t idtr;
 
-// Forward declarations for interrupt handlers
-extern "C" void interrupt_stub();
-extern "C" void interrupt_stub_error();
-extern "C" void isr0_stub();
-extern "C" void isr1_stub();
-extern "C" void isr8_stub();
-extern "C" void isr13_stub();
-extern "C" void isr14_stub();
-extern "C" void irq0_stub();
+// Set the ISR stubs table in assembly (will be defined in interrupts.S)
+extern void* isr_stub_table[];
 
-// Extern functions for C interrupt handlers
-extern "C" void isr0_handler();
-extern "C" void isr1_handler();
-extern "C" void isr8_handler(uin32_t error_code);
-extern "C" void isr13_handler(uint32_t error_code);
-extern "C" void isr14_handler(uint32_t error_code);
-extern "C" void irq0_handler();
+extern "C" void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags) {
+    idt_entry_t* descriptor = &idt[vector];
 
-extern "C" void register_interrupt_handler_with_error_code(uint8_t interrupt, void (*handler)(uint32_t)) {
-    interrupt_handlers_with_error_code[interrupt] = handler;
+    descriptor->isr_low        = (uint32_t)isr & 0xFFFF;
+    descriptor->kernel_cs      = 0x08; // Your kernel code segment selector
+    descriptor->attributes     = flags;
+    descriptor->isr_high       = (uint32_t)isr >> 16;
+    descriptor->reserved       = 0;
 }
 
-// Load the IDT pointer into %eax for assembly
-extern "C" void idt_load(IDTPointer* idt_ptr) {
-    asm volatile ("lidt (%0)" : : "r"(idt_ptr));
+extern "C" void idt_init() {
+    // Set up the IDT pointer
+    idtr.base = (uintptr_t)&idt[0];
+    idtr.limit = (uint16_t)sizeof(idt_entry_t) * IDT_MAX_DESCRIPTORS - 1;
+
+    // Load exception handlers (stubs for first 32 interrupts)
+    for (uint8_t vector = 0; vector < 32; vector++) {
+        idt_set_descriptor(vector, isr_stub_table[vector], 0x8E);  // Use 0x8E for present, DPL 0, 32-bit interrupt gate
+    }
+
+    // Load the new IDT and enable interrupts
+    __asm__ volatile ("lidt %0" : : "m"(idtr)); // Load IDT
+    __asm__ volatile ("sti");                   // Set the interrupt flag
 }
-
-// Register a handler for a specific interrupt
-void register_interrupt_handler(uint8_t interrupt, void (*handler)()) {
-    idt_entries[interrupt].base_low = ((uint32_t)handler) & 0xFFFF;
-    idt_entries[interrupt].base_high = ((uint32_t)handler >> 16) & 0xFFFF;
-    idt_entries[interrupt].selector = 0x08; // Kernel code segment selector
-    idt_entries[interrupt].zero = 0;
-    idt_entries[interrupt].flags = 0x8E; // Present, Ring 0, 32-bit interrupt gate
-}
-
-// Initialize the IDT with default handlers
-void init_idt() {
-    memset(idt_entries, 0, sizeof(IDTEntry) * 256);
-
-    // Set up specific handlers
-    register_interrupt_handler(0, isr0_stub);     // Divide by zero
-    register_interrupt_handler(1, isr1_stub);     // Debug
-    register_interrupt_handler(8, isr8_stub);     // Double Fault
-    register_interrupt_handler(13, isr13_stub);   // General Protection Fault
-    register_interrupt_handler(14, isr14_stub);   // Page fault
-    register_interrupt_handler(32, irq0_stub);    // Timer IRQ
-
-    // Set up the IDT pointer and load it
-    idt_ptr.limit = sizeof(IDTEntry) * 256 - 1;
-    idt_ptr.base = (uint32_t)&idt_entries;
-    idt_load(&idt_ptr);
-}
-
