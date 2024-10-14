@@ -65,11 +65,17 @@ isr0_stub:
     pushl $0                # Interrupt number 0 (Divide by zero)
     jmp interrupt_stub
 
-.global irq0_stub
-.type irq0_stub, @function
-irq0_stub:
-    pushl $32               # IRQ0 mapped to interrupt 32
-    jmp interrupt_stub
+.global isr8_stub
+.type isr8_stub, @function
+isr8_stub:
+    pushl $8                # Interrupt number 8 (Double Fault)
+    jmp interrupt_stub_error
+
+.global isr13_stub
+.type isr13_stub, @function
+isr13_stub:
+    pushl $13               # Interrupt number 13 (General Protection Fault)
+    jmp interrupt_stub_error
 
 .global isr14_stub
 .type isr14_stub, @function
@@ -77,3 +83,8 @@ isr14_stub:
     pushl $14
     jmp interrupt_stub_error
 
+.global irq0_stub
+.type irq0_stub, @function
+irq0_stub:
+    pushl $32               # IRQ0 mapped to interrupt 32
+    jmp interrupt_stub
