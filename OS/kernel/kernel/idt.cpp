@@ -1,5 +1,5 @@
-include <string.h>
-include "kernel/idt.h"
+#include <string.h>
+#include "kernel/idt.h"
 
 // Create an aligned array of IDT entries
 __attribute__((aligned(0x10)))
