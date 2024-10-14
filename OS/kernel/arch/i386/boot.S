@@ -15,9 +15,17 @@
 
 # Allocate the initial stack
 .section .bootstrap_stack, "aw", @nobits
-stack_bottom:
-.skip 16384 # 16 KiB
-stack_top:
+stack_bottom_0:
+	.skip 16384 # 16 KiB for ring 0
+stack_top_0:
+
+stack_bottom_1:
+	.skip 16384 # 16 KiB for ring 1
+stack_top_1:
+
+stack_bottom_2:
+	.skip 16384 # 16 Kib for ring 2
+stack_top_2:
 
 # Preallocate pages used for paging.  Dont hard cade addresses and assume they are available
 # as the bootloader might have loaded its multiboot structures or odules there.
@@ -92,28 +100,26 @@ gdt_ptr:
 .section .tss, "aw", @progbits
 .align 8
 tss:
-    	.quad 0                  /* Previous TSS */
-    	.long stack_top          /* Stack pointer (ESP0) */
-    	.quad 0x10               /* Stack segment (SS0) - Kernel Data Segment Selector */
-    	.zero 104                /* Zero the rest of the TSS (total size 104 bytes) */
+    .quad 0                  # Previous TSS
+    .long stack_top_0         # ESP0: Stack pointer for privilege level 0 (ring 0)
+    .word 0x10                # SS0: Stack segment for ring 0
+    .word 0x0000              # Reserved
 
-tss_start:
-    /* TSS is defined above */
-	.quad 0                  /* Previous TSS */
-    	.long stack_top          /* ESP0 */
-    	.word 0x10               /* SS0: Kernel Data Segment Selector (0x10) */
-    	.word 0x0000             /* Reserved */
-    	.quad 0                  /* ESP1 */
-    	.quad 0                  /* SS1 */
-    	.quad 0                  /* ESP2 */
-    	.quad 0                  /* SS2 */
-    	.quad 0                  /* CR3 */
-    	.quad 0                  /* EIP */
-    	.quad 0                  /* EFLAGS */
-    	.quad 0                  /* ESP */
-    	.quad 0                  /* SS */
-    /* The rest of the TSS should be zeroed */
-    	.zero 80                /* Total TSS size is 104 bytes (0x68) */
+    .long stack_top_1         # ESP1: Stack pointer for privilege level 1 (ring 1)
+    .word 0x10                # SS1: Stack segment for ring 1
+    .word 0x0000              # Reserved
+
+    .long stack_top_2         # ESP2: Stack pointer for privilege level 2 (ring 2)
+    .word 0x10                # SS2: Stack segment for ring 2
+    .word 0x0000              # Reserved
+
+    .quad 0                  # CR3 (Page Directory Base Register)
+    .quad 0                  # EIP (Instruction Pointer)
+    .quad 0                  # EFLAGS (Flags Register)
+    .quad 0                  # ESP (Stack Pointer)
+    .quad 0                  # SS (Stack Segment)
+    .quad 0                  # Other registers and reserved space
+    .zero 80                 # Zero the rest of the TSS
 tss_end:
 
 /* Calculate TSS fields for the descriptor */
@@ -146,8 +152,6 @@ reload_cs:
 	cli
 	mov $0x28, %ax
 	ltr %ax
-	#sti
-	#ret
 	jmp _continue
 
 
@@ -199,13 +203,6 @@ _continue:
 	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
 	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
 
-	#### DEBUG #####
-	# Map physical address 0x2000 to virtual address 0x00002000 (identity-mapped)
-	#movl $(0x2000 | 0x003), boot_page_table1 - 0xC0000000 + 2 * 4
-
-	# Optionally, map 0x2000 to a virtual address in the higher half (e.g., 0xC0002000)
-	#movl $(0x2000 | 0x003), boot_page_table1 - 0xC0000000 + (768 * 4 + 2 * 4)
-
 	# Set cr3 to the address of the boot_page_directory.
 	movl $(boot_page_directory - 0xC0000000), %ecx
 	movl %ecx, %cr3
@@ -230,14 +227,6 @@ _continue:
 	# Reload cr3 to force a TLB flush so the changes take effect.
 	movl %cr3, %ecx
 	movl %ecx, %cr3
-
-	# Zero out BSS section
-	#movl $_bss_start, %edi
-	#movl $_bss_end, %ecx
-	#subl %edi, %ecx
-	#shrl $2, %ecx
-	#xorl %eax, %eax
-	#rep stosl
 
 	# set up the stack
 	mov $stack_top, %esp
