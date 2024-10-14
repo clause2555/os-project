@@ -12,13 +12,19 @@ void (*interrupt_handlers_with_error_code[256])(uint32_t) = { nullptr };
 extern "C" void interrupt_stub();
 extern "C" void interrupt_stub_error();
 extern "C" void isr0_stub();
-extern "C" void irq0_stub();
+extern "C" void isr1_stub();
+extern "C" void isr8_stub();
+extern "C" void isr13_stub();
 extern "C" void isr14_stub();
+extern "C" void irq0_stub();
 
 // Extern functions for C interrupt handlers
 extern "C" void isr0_handler();
-extern "C" void irq0_handler();
+extern "C" void isr1_handler();
+extern "C" void isr8_handler(uin32_t error_code);
+extern "C" void isr13_handler(uint32_t error_code);
 extern "C" void isr14_handler(uint32_t error_code);
+extern "C" void irq0_handler();
 
 extern "C" void register_interrupt_handler_with_error_code(uint8_t interrupt, void (*handler)(uint32_t)) {
     interrupt_handlers_with_error_code[interrupt] = handler;
@@ -44,6 +50,9 @@ void init_idt() {
 
     // Set up specific handlers
     register_interrupt_handler(0, isr0_stub);     // Divide by zero
+    register_interrupt_handler(1, isr1_stub);     // Debug
+    register_interrupt_handler(8, isr8_stub);     // Double Fault
+    register_interrupt_handler(13, isr13_stub);   // General Protection Fault
     register_interrupt_handler(14, isr14_stub);   // Page fault
     register_interrupt_handler(32, irq0_stub);    // Timer IRQ
 
