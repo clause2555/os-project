@@ -152,10 +152,7 @@ reload_cs:
 	cli
 	mov $0x28, %ax
 	ltr %ax
-	jmp _continue
 
-
-_continue:
 	# Physical address of boot_page_table1.
 	# TODO: Assembly that uses a macro to do conversion to and from phyical, could be done here?
 	#
@@ -222,14 +219,14 @@ _continue:
 	# At this point, paging is fully set up and enabled
 
 	# Unmap the identity mapping as it is now unnecessary
-	movl $0, boot_page_directory + 0
+	# movl $0, boot_page_directory + 0
 
 	# Reload cr3 to force a TLB flush so the changes take effect.
 	movl %cr3, %ecx
 	movl %ecx, %cr3
 
 	# set up the stack
-	mov $stack_top, %esp
+	mov $stack_top_0, %esp
 
 	# Enter the high-level kernel.
 	call kernel_main

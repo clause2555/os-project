@@ -49,15 +49,15 @@ extern "C" void kernel_main(void) {
 
 	check_paging();
 
-	init_idt();
+	idt_init();
 
-	pic_remap(32, 40);
+	//pic_remap(32, 40);
 
-	init_timer(1000);
+	//init_timer(1000);
 
-	asm volatile ("sti");
+	//asm volatile ("sti");
 
-	//asm volatile ("int $0"); // manually trigger divide by zero
+	//asm volatile ("int $13"); // manually trigger divide by zero
 	
 	printf("Hello, c++ kernel World!\n");
 

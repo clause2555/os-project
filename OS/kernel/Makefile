@@ -31,7 +31,6 @@ KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
 kernel/kernel.o \
 kernel/idt.o \
-kernel/interrupt_handler.o \
 kernel/handlers.o \
 kernel/pic.o \
 

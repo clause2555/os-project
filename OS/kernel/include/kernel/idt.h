@@ -17,6 +17,8 @@ typedef struct {
     uint32_t    base;
 } __attribute__((packed)) idtr_t;
 
+extern "C" void idt_init();
+
 #define IDT_MAX_DESCRIPTORS 256
 
 #endif // IDT_H
