@@ -11,6 +11,9 @@ static idtr_t idtr;
 // Set the ISR stubs table in assembly (will be defined in interrupts.S)
 extern void* isr_stub_table[];
 
+// Set the IRQ stubs table in assembly (defined in interrups.S)
+extern void* irq_stub_table[];
+
 extern "C" void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags) {
     idt_entry_t* descriptor = &idt[vector];
 
@@ -29,6 +32,10 @@ extern "C" void idt_init() {
     // Load exception handlers (stubs for first 32 interrupts)
     for (uint8_t vector = 0; vector < 32; vector++) {
         idt_set_descriptor(vector, isr_stub_table[vector], 0x8E);  // Use 0x8E for present, DPL 0, 32-bit interrupt gate
+    }
+
+    for (uint8_t vector = 0; vector < 16; vector++) {
+        idt_set_descriptor(32 + vector, irq_stub_table[vector], 0x8E);
     }
 
     // Load the new IDT and enable interrupts

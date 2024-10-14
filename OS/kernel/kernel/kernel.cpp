@@ -51,9 +51,9 @@ extern "C" void kernel_main(void) {
 
 	idt_init();
 
-	//pic_remap(32, 40);
+	pic_remap(32, 40);
 
-	//init_timer(1000);
+	init_timer(19);
 
 	//asm volatile ("sti");
 
