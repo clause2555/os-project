@@ -19,6 +19,22 @@ extern "C" void isr1_handler() {
     }
 }
 
+// Double Fault Handler
+extern "C" void isr8_handler(uint32_t error_code) {
+    printf("Double Fault occured! Error Code: %u\n", error_code);
+    while (1) {
+        asm volatile ("hlt");
+    }
+}
+
+// General Protection Fault Handler
+extern "C" void isr13_handler(uint32_t error_code) {
+    printf("General Protection Fault! Error Code: %u\n", error_code);
+    while (1) {
+        asm volatile ("hlt");
+    }
+}
+
 // Page fault handler
 extern "C" void isr14_handler(uint32_t error_code) {
     uint32_t faulting_address;
