@@ -11,7 +11,7 @@ SECTIONS
 	/* which will be mapped to 1MB in the physcial address space. */
 	/* Note that we page-align the sections. */
 
-	_kernel_start = .;
+	/*_kernel_start = .; */
 	.multiboot.data : {
 		*(.multiboot.data)
 	}
@@ -28,12 +28,11 @@ SECTIONS
 	.gdt_ptr : ALIGN(8) {
 		*(.gdt_ptr)
 	}
-
-	/* IDT Section */
+	/*
 	.idt : ALIGN(8) {
 		*(.idt)
 	}
-
+	*/
 	.tss : ALIGN(8) {
 		tss_start = ABSOLUTE(.);
 		*(.tss)
@@ -47,25 +46,40 @@ SECTIONS
 	tss_base_high = (tss_start >> 24) & 0xFF;
 
 	. += 0xC0000000;
-	/* Add a symbool that indicates the start address of the kernel */
-	.text ALIGN(4K) : AT (ADDR (.text) - 0xC0000000)
+	_kernel_start = .;
+
+
+	/* map IDT to higher half */
+	.idt ALIGN(8) : AT(ADDR(.idt) - 0xC0000000)
+	{
+		*(.idt)
+	}
+	.text ALIGN(4096) : AT(ADDR(.text) - 0xC0000000)
 	{
 		*(.text)
+		*(.interrupts)
 	}
-	.rodata ALIGN(4K) : AT (ADDR (.rodata) - 0xC0000000)
+	.rodata ALIGN(4096) : AT(ADDR(.rodata) - 0xC0000000)
 	{
 		*(.rodata)
 	}
-	.data ALIGN(4K) : AT (ADDR (.data) - 0xC0000000)
+	.data ALIGN(4096) : AT(ADDR(.data) - 0xC0000000)
 	{
 		*(.data)
 	}
-	.bss ALIGN(4K) : AT (ADDR (.bss) - 0xC0000000)
+	.bss ALIGN(4096) : AT(ADDR(.bss) - 0xC0000000)
 	{
+		_bss_start = .;
 		*(COMMON)
-		*(.bss)
+		*(.bss*)
 		*(.bootstrap_stack)
+		/* boot_page_directory = .; */
+		/*. += 0x1000;  reserver space for the page directory */
+		/* boot_page_table1 = .; /* Next Page after page dir */
+		/* += 0x1000; /* reserver space for the first page table */
+		_bss_end = .;
 	}
 	/* Add a symble the indicates the end address of the kernel. */
 	_kernel_end = .;
+	_kernel_size = _kernel_end - _kernel_start;
 }

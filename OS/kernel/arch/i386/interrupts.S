@@ -1,60 +1,79 @@
-/* interrupts.S */
-.section .idt, "aw", @progbits
-.align 8
-.global idt_load
-.type idt_load, @function
-idt_load:
-    #Load the IDT using the lidt instruction
-    lidt (%eax)          # IDT pointer is passed in EAX
-    ret
+.section .interrupts, "ax", @progbits
+.align 4
+
+# General interrupt stub
 .global interrupt_stub
 .type interrupt_stub, @function
 interrupt_stub:
-    pusha                # Save all general-purpose registers
-    push %ds             # Save data segment
+    popl %eax               # Pop interrupt number into eax
+    pusha                   # Save registers
+    push %ds
     push %es
     push %fs
     push %gs
 
-    # Set DS, ES, FS, GS to kernel data segment (0x10)
-    movw $0x10, %ax
+    movw $0x10, %ax         # Set kernel data segment
     movw %ax, %ds
     movw %ax, %es
     movw %ax, %fs
     movw %ax, %gs
 
-    # Call the C++ interrupt handler
+    pushl %eax              # Push interrupt number for C handler
     call interrupt_handler_c
 
-    pop %gs              # Restore GS
-    pop %fs              # Restore FS
-    pop %es              # Restore ES
-    pop %ds              # Restore DS
-    popa                 # Restore all general-purpose registers
+    addl $4, %esp           # Clean stack
+    pop %gs
+    pop %fs
+    pop %es
+    pop %ds
+    popa
+    iret                    # Return from interrupt
 
-    # Send End of Interrupt (EOI) to PIC
-    movb $0x20, %al
-    outb %al, $0x20
+# Error code interrupt stub
+.global interrupt_stub_error
+.type interrupt_stub_error, @function
+interrupt_stub_error:
+    popl %eax               # Pop interrupt number
+    pusha                   # Save registers
+    push %ds
+    push %es
+    push %fs
+    push %gs
 
-    iret                 # Return from interrupt
+    movw $0x10, %ax         # Set kernel data segment
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
 
+    pushl 8(%esp)           # Push error code
+    pushl %eax              # Push interrupt number for C handler
+    call interrupt_handler_c_with_error_code
+
+    addl $8, %esp           # Clean stack
+    pop %gs
+    pop %fs
+    pop %es
+    pop %ds
+    popa
+    iret                    # Return from interrupt
+
+# Specific Interrupt Stubs
 .global isr0_stub
 .type isr0_stub, @function
 isr0_stub:
-    pushl $0             # Push interrupt number (0)
-    jmp interrupt_stub
-
-.global isr1_stub
-.type isr0_stub, @function
-isr1_stub:
-    pushl $1             # Push interrupt number (1)
+    pushl $0                # Interrupt number 0 (Divide by zero)
     jmp interrupt_stub
 
 .global irq0_stub
 .type irq0_stub, @function
 irq0_stub:
-    pushl $32            # IRQ0 mapped to interrupt 32
+    pushl $32               # IRQ0 mapped to interrupt 32
     jmp interrupt_stub
 
-    # Repeat the above pattern for other interrupts/exceptions as needed
+.global isr14_stub
+.type isr14_stub, @function
+isr14_stub:
+    pushl $14
+    jmp interrupt_stub_error
 

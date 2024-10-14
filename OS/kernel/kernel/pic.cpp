@@ -1,4 +1,5 @@
 // pic.cpp
+#include "stdio.h"
 #include "kernel/pic.h"
 
 static inline void outb(uint16_t port, uint8_t val) {
@@ -14,6 +15,8 @@ static inline uint8_t inb(uint16_t port) {
 }
 
 extern "C" void pic_remap(int offset1, int offset2) {
+    printf("Remapping PIC: Master Offset %d, Slave Offset %d\n", offset1, offset2);
+
     // Save masks
     uint8_t a1 = inb(0x21); // Master PIC
     uint8_t a2 = inb(0xA1); // Slave PIC
@@ -29,5 +32,11 @@ extern "C" void pic_remap(int offset1, int offset2) {
     outb(0xA1, 0x01); // Tell Slave PIC to operate in 8086/88 mode
     outb(0x21, a1);    // Restore saved masks
     outb(0xA1, a2);
+
+    uint8_t mask = inb(0x21);
+    mask &= ~(1 << 0);
+    outb(0x21, mask);
+
+    printf("PIC Remapped Succesfully.\n");
 }
 

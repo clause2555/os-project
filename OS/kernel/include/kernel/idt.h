@@ -28,9 +28,15 @@ extern "C" void idt_load(IDTPointer*);
 // Function to register an interrupt handler
 extern "C" void register_interrupt_handler(uint8_t interrupt, void (*handler)());
 
+extern "C" void register_interrupt_handler_with_error_code(uint8_t interrupt, void (*handler)(uint32_t));
+
+extern "C" void interrupt_handler_c_with_error_code(uint32_t interrupt_number, uint32_t error_code);
+//extern IDTEntry idt[256] __attribute((aligned(8)));
 //extern "C" void isr0_handler();
 
 //extern "C" void interrupt_handler_c();
+//
+extern "C" void isr14_handler(uint32_t error_code);
 
 #endif // IDT_H
 

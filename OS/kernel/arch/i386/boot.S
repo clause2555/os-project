@@ -146,8 +146,12 @@ reload_cs:
 	cli
 	mov $0x28, %ax
 	ltr %ax
-	sti
+	#sti
+	#ret
+	jmp _continue
 
+
+_continue:
 	# Physical address of boot_page_table1.
 	# TODO: Assembly that uses a macro to do conversion to and from phyical, could be done here?
 	#
@@ -195,6 +199,13 @@ reload_cs:
 	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
 	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
 
+	#### DEBUG #####
+	# Map physical address 0x2000 to virtual address 0x00002000 (identity-mapped)
+	#movl $(0x2000 | 0x003), boot_page_table1 - 0xC0000000 + 2 * 4
+
+	# Optionally, map 0x2000 to a virtual address in the higher half (e.g., 0xC0002000)
+	#movl $(0x2000 | 0x003), boot_page_table1 - 0xC0000000 + (768 * 4 + 2 * 4)
+
 	# Set cr3 to the address of the boot_page_directory.
 	movl $(boot_page_directory - 0xC0000000), %ecx
 	movl %ecx, %cr3
@@ -219,6 +230,14 @@ reload_cs:
 	# Reload cr3 to force a TLB flush so the changes take effect.
 	movl %cr3, %ecx
 	movl %ecx, %cr3
+
+	# Zero out BSS section
+	#movl $_bss_start, %edi
+	#movl $_bss_end, %ecx
+	#subl %edi, %ecx
+	#shrl $2, %ecx
+	#xorl %eax, %eax
+	#rep stosl
 
 	# set up the stack
 	mov $stack_top, %esp
