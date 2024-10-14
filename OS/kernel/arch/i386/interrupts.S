@@ -65,6 +65,12 @@ isr0_stub:
     pushl $0                # Interrupt number 0 (Divide by zero)
     jmp interrupt_stub
 
+.global isr1_stub
+.type isr1_stub, @function
+isr1_stub:
+    pushl $1
+    jmp interrupt_stub
+
 .global isr8_stub
 .type isr8_stub, @function
 isr8_stub:
