@@ -1,96 +1,91 @@
 .section .interrupts, "ax", @progbits
 .align 4
 
-# General interrupt stub
-.global interrupt_stub
-.type interrupt_stub, @function
-interrupt_stub:
-    popl %eax               # Pop interrupt number into eax
-    pusha                   # Save registers
-    push %ds
-    push %es
-    push %fs
-    push %gs
+.global exception_handler
+.extern exception_handler
 
-    movw $0x10, %ax         # Set kernel data segment
-    movw %ax, %ds
-    movw %ax, %es
-    movw %ax, %fs
-    movw %ax, %gs
+# ISR stubs with no error code
+.macro isr_no_err_stub number
+.global isr_stub_\number
+isr_stub_\number:
+    call exception_handler
+    iret
+.endm
 
-    pushl %eax              # Push interrupt number for C handler
-    call interrupt_handler_c
+# ISR stubs with error code
+.macro isr_err_stub number
+.global isr_stub_\number
+isr_stub_\number:
+    call exception_handler
+    iret
+.endm
 
-    addl $4, %esp           # Clean stack
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
-    popa
-    iret                    # Return from interrupt
+# Define the 32 ISR stubs
+isr_no_err_stub 0
+isr_no_err_stub 1
+isr_no_err_stub 2
+isr_no_err_stub 3
+isr_no_err_stub 4
+isr_no_err_stub 5
+isr_no_err_stub 6
+isr_no_err_stub 7
+isr_err_stub    8
+isr_no_err_stub 9
+isr_err_stub    10
+isr_err_stub    11
+isr_err_stub    12
+isr_err_stub    13
+isr_err_stub    14
+isr_no_err_stub 15
+isr_no_err_stub 16
+isr_err_stub    17
+isr_no_err_stub 18
+isr_no_err_stub 19
+isr_no_err_stub 20
+isr_no_err_stub 21
+isr_no_err_stub 22
+isr_no_err_stub 23
+isr_no_err_stub 24
+isr_no_err_stub 25
+isr_no_err_stub 26
+isr_no_err_stub 27
+isr_no_err_stub 28
+isr_no_err_stub 29
+isr_err_stub    30
+isr_no_err_stub 31
 
-# Error code interrupt stub
-.global interrupt_stub_error
-.type interrupt_stub_error, @function
-interrupt_stub_error:
-    popl %eax               # Pop interrupt number
-    pusha                   # Save registers
-    push %ds
-    push %es
-    push %fs
-    push %gs
-
-    movw $0x10, %ax         # Set kernel data segment
-    movw %ax, %ds
-    movw %ax, %es
-    movw %ax, %fs
-    movw %ax, %gs
-
-    pushl 8(%esp)           # Push error code
-    pushl %eax              # Push interrupt number for C handler
-    call interrupt_handler_c_with_error_code
-
-    addl $8, %esp           # Clean stack
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
-    popa
-    iret                    # Return from interrupt
-
-# Specific Interrupt Stubs
-.global isr0_stub
-.type isr0_stub, @function
-isr0_stub:
-    pushl $0                # Interrupt number 0 (Divide by zero)
-    jmp interrupt_stub
-
-.global isr1_stub
-.type isr1_stub, @function
-isr1_stub:
-    pushl $1
-    jmp interrupt_stub
-
-.global isr8_stub
-.type isr8_stub, @function
-isr8_stub:
-    pushl $8                # Interrupt number 8 (Double Fault)
-    jmp interrupt_stub_error
-
-.global isr13_stub
-.type isr13_stub, @function
-isr13_stub:
-    pushl $13               # Interrupt number 13 (General Protection Fault)
-    jmp interrupt_stub_error
-
-.global isr14_stub
-.type isr14_stub, @function
-isr14_stub:
-    pushl $14
-    jmp interrupt_stub_error
-
-.global irq0_stub
-.type irq0_stub, @function
-irq0_stub:
-    pushl $32               # IRQ0 mapped to interrupt 32
-    jmp interrupt_stub
+# Stub table
+.global isr_stub_table
+isr_stub_table:
+    .long isr_stub_0
+    .long isr_stub_1
+    .long isr_stub_2
+    .long isr_stub_3
+    .long isr_stub_4
+    .long isr_stub_5
+    .long isr_stub_6
+    .long isr_stub_7
+    .long isr_stub_8
+    .long isr_stub_9
+    .long isr_stub_10
+    .long isr_stub_11
+    .long isr_stub_12
+    .long isr_stub_13
+    .long isr_stub_14
+    .long isr_stub_15
+    .long isr_stub_16
+    .long isr_stub_17
+    .long isr_stub_18
+    .long isr_stub_19
+    .long isr_stub_20
+    .long isr_stub_21
+    .long isr_stub_22
+    .long isr_stub_23
+    .long isr_stub_24
+    .long isr_stub_25
+    .long isr_stub_26
+    .long isr_stub_27
+    .long isr_stub_28
+    .long isr_stub_29
+    .long isr_stub_30
+    .long isr_stub_31
