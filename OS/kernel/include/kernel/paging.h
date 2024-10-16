@@ -32,8 +32,5 @@ namespace Paging {
 
 } // namespace Paging
   
-// declare exteral paging init funct needed for boot.S
-extern "C" void paging_init(uint32_t* page_directory_phys, uint32_t* page_table1_phys);
-
 #endif // PAGING_H
 

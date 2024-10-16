@@ -1,5 +1,5 @@
 #include "kernel/memory.h"
-#include "kernel/multiboot.h"  // Assuming you have your multiboot info structure here
+#include "kernel/multiboot.h"  
 #include <string.h>      // For memset
 
 #define PAGE_SIZE 4096  // 4KB pages
@@ -21,6 +21,7 @@ void initialize_memory_manager() {
     // Ensure we have access to the multiboot information
     if (!g_multiboot_info || !(g_multiboot_info->flags & (1 << 6))) {
         // No memory map available, handle error
+	// TODO write error handling logic
         return;
     }
 

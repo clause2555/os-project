@@ -57,11 +57,11 @@ $(ARCHDIR)/crtn.o \
 .PHONY: all clean install install-headers install-kernel
 .SUFFIXES: .o .c .cpp .S .asm
 
-all: myos.kernel
+all: fableos.kernel
 
-myos.kernel: $(OBJS) $(ARCHDIR)/linker.ld
+fableos.kernel: $(OBJS) $(ARCHDIR)/linker.ld
 	$(CPP) -T $(ARCHDIR)/linker.ld -o $@ $(CFLAGS) $(CPPFLAGS) $(LINK_LIST)
-	grub-file --is-x86-multiboot myos.kernel
+	grub-file --is-x86-multiboot fableos.kernel
 
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	OBJ=`$(CPP) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
@@ -79,7 +79,7 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	$(AS) -MD -c $< -o $@ 
 
 clean:
-	rm -f myos.kernel
+	rm -f fableos.kernel
 	rm -f $(OBJS) *.o */*.o */*/*.o
 	rm -f $(OBJS:.o=.d) *.d */*.d */*/*.d
 
@@ -89,8 +89,8 @@ install-headers:
 	mkdir -p $(DESTDIR)$(INCLUDEDIR)
 	cp -R --preserve=timestamps include/. $(DESTDIR)$(INCLUDEDIR)/.
 
-install-kernel: myos.kernel
+install-kernel: fableos.kernel
 	mkdir -p $(DESTDIR)$(BOOTDIR)
-	cp myos.kernel $(DESTDIR)$(BOOTDIR)
+	cp fableos.kernel $(DESTDIR)$(BOOTDIR)
 
 -include $(OBJS:.o=.d)

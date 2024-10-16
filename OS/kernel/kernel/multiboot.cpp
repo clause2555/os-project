@@ -1,6 +1,6 @@
 #include "kernel/multiboot.h"
 #include <stdio.h>
-
+//TODO I believe I can remove this entirely as I am calculating the total memory in Memory::initialize_memory_manager()
 extern "C" uint64_t get_mmap(uint32_t magic, multiboot_info_t* mb_info) {
 	uint64_t total_usable_memory = 0;
 

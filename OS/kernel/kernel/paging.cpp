@@ -21,12 +21,6 @@ namespace Paging {
         kernel_page_directory = reinterpret_cast<uint32_t*>(0xC0106000); // Virtual address
         boot_page_table1 = reinterpret_cast<uint32_t*>(0xC0107000); // Virtual address
 
-        // Identity map the first 4MB (if needed)
-        //for (size_t i = 0; i < 1024; ++i) {
-        //    kernel_page_directory[i] = (i * 0x1000) | PAGE_PRESENT | PAGE_WRITABLE;
-        //    boot_page_table1[i] = (i * 0x1000) | PAGE_PRESENT | PAGE_WRITABLE;
-        //}
-
         // Set up self-referencing
         kernel_page_directory[SELF_REF_INDEX] = reinterpret_cast<uint32_t>(page_directory_phys) | PAGE_PRESENT | PAGE_WRITABLE;
 
@@ -48,7 +42,7 @@ namespace Paging {
         // Check if page table is present
         if (!(page_directory[pd_index] & PAGE_PRESENT)) {
             // Allocate a new page table
-            void* new_page_table_phys = allocate_page(); // Implement allocate_page()
+            void* new_page_table_phys = allocate_page(); 
             if (!new_page_table_phys) {
                 printf("Failed to allocate new page table.\n");
                 return false;
@@ -164,29 +158,3 @@ namespace Paging {
     }
 
 } // namespace Paging
-
-
-extern "C" void paging_init(uint32_t* page_directory_phys, uint32_t* page_table1_phys) {
-    Paging::init_paging(page_directory_phys, page_table1_phys);
-
-    // Check for APIC support
-    if (CPUID::cpuid(1).edx & (1 << 9)) { // APIC is bit 9 in EDX
-        //printf("APIC supported. Enabling APIC.\n");
-
-        // Allocate virtual memory for APIC if not already mapped
-        // APIC_BASE_VIRT is 0xC0EE0000
-        // APIC physical address is typically 0xFEE00000
-        // Map APIC region (assuming 4KB for simplicity)
-        if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000), reinterpret_cast<void*>(0xC0EE0000), reinterpret_cast<void*>(0xFEE00000), Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
-            //printf("Failed to map APIC.\n");
-	    asm volatile ("int $0"); // no console init yet, testing for failuring with divby0
-            // Handle error
-        } else {
-            // Initialize APIC
-            APIC::enable_apic();
-            //printf("APIC enabled and mapped.\n");
-        }
-    } else {
-        //printf("APIC not supported.\n");
-    }
-}

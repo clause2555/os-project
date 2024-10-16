@@ -39,7 +39,8 @@ extern "C" void kernel_main(uint32_t magic, multiboot_info_t* mb_info) {
 
 	if (CPUID::cpuid(1).edx & (1 << 9)) { // APIC is bit 9 in EDX
         	if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000), reinterpret_cast<void*>(0xC0EE0000), reinterpret_cast<void*>(0xFEE00000), Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
-            		asm volatile ("int $0"); // no console init yet, testing for failuring with divby0
+			//TODO set up custom programmable interrupt to failure to PIC if the memory for APIC fails to map
+            		asm volatile ("int $0"); // no console init yet, testing for failure with divby0
         	} else {
             		// Initialize APIC
             		APIC::enable_apic();

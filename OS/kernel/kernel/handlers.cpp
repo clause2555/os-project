@@ -15,7 +15,7 @@ extern "C" __attribute__((noreturn)) void exception_handler(void) {
 extern "C" void irq_handler(void) {
     // acknowledge the interupt to the PIC
     //outb(0x20, 0x20); // send end of interrupt to PIC
-		      //
     // handle IRQs here
+    // TODO add in logic for determing whether to use PIC or APIC 
 	APIC::send_eoi();
 }

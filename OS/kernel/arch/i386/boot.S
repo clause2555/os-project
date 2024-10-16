@@ -164,7 +164,7 @@ reload_cs:
 	# 1 MiB as it can be generally usefull, and there no need to specially map the VGA buffer.
 	movl $0, %esi
 	# Map 1023 pages. the 1024 will be the VGA text buffer
-	movl $1023, %ecx
+	movl $1022, %ecx
 
 1:
 	# Only map the kernel.
@@ -226,15 +226,6 @@ reload_cs:
 	# Reload cr3 to force a TLB flush so the changes take effect.
 	movl %cr3, %ecx
 	movl %ecx, %cr3
-
-	# call paging_init to init dynamic paging and APIC if available
-	# pass phys address of page dir and page table
-	#movl $(boot_page_directory - 0xC0000000), %eax
-	#movl $(boot_page_table1 - 0xC0000000), %ebx
-	#push %ebx
-	#push %eax
-	#call paging_init
-	#addl $8, %esp
 
 	# set up the stack
 	mov $stack_top_0, %esp
