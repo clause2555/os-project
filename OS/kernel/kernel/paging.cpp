@@ -177,7 +177,7 @@ extern "C" void paging_init(uint32_t* page_directory_phys, uint32_t* page_table1
         // APIC_BASE_VIRT is 0xC0EE0000
         // APIC physical address is typically 0xFEE00000
         // Map APIC region (assuming 4KB for simplicity)
-        if (!Paging::map_page(Paging::kernel_page_directory, reinterpret_cast<void*>(0xC0EE0000), reinterpret_cast<void*>(0xFEE00000), Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
+        if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000), reinterpret_cast<void*>(0xC0EE0000), reinterpret_cast<void*>(0xFEE00000), Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
             //printf("Failed to map APIC.\n");
 	    asm volatile ("int $0"); // no console init yet, testing for failuring with divby0
             // Handle error

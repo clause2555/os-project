@@ -229,12 +229,12 @@ reload_cs:
 
 	# call paging_init to init dynamic paging and APIC if available
 	# pass phys address of page dir and page table
-	movl $(boot_page_directory - 0xC0000000), %eax
-	movl $(boot_page_table1 - 0xC0000000), %ebx
-	push %ebx
-	push %eax
-	call paging_init
-	addl $8, %esp
+	#movl $(boot_page_directory - 0xC0000000), %eax
+	#movl $(boot_page_table1 - 0xC0000000), %ebx
+	#push %ebx
+	#push %eax
+	#call paging_init
+	#addl $8, %esp
 
 	# set up the stack
 	mov $stack_top_0, %esp
