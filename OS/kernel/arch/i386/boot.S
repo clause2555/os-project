@@ -32,8 +32,10 @@ stack_top_2:
 # This lets the bootloader know it must avoid the addresses.
 .section .bss, "aw", @nobits
 	.align 4096
+.global boot_page_directory
 boot_page_directory:
 	.skip 4096
+.global boot_page_table1
 boot_page_table1:
 	.skip 4096
 # Further page tables may be required if the kernel grows beyond 3Mib (currently as 22Kib)
@@ -187,7 +189,7 @@ reload_cs:
 
 3:
 	# Map VGA video emory to 0xC03FF000 as "present, writable".
-	movl $(0x000B8000 | 0x003), boot_page_table1 - 0xC0000000 + 1023 * 4
+	movl $(0x000B8000 | 0x003), boot_page_table1 - 0xC0000000 + 1022 * 4
 
 	# The page table is used at both page directory entry 0 (virtually from 0x0
 	# to 0x3FFFFF) (thus identity mapping the kernel) and page directory entry
@@ -225,10 +227,21 @@ reload_cs:
 	movl %cr3, %ecx
 	movl %ecx, %cr3
 
+	# call paging_init to init dynamic paging and APIC if available
+	# pass phys address of page dir and page table
+	movl $(boot_page_directory - 0xC0000000), %eax
+	movl $(boot_page_table1 - 0xC0000000), %ebx
+	push %ebx
+	push %eax
+	call paging_init
+	addl $8, %esp
+
 	# set up the stack
 	mov $stack_top_0, %esp
 
 	# Enter the high-level kernel.
+	push %ebx
+	push %eax 
 	call kernel_main
 
 	# Infinit loop if the system has nothing more to do.

@@ -70,8 +70,7 @@ SECTIONS
 		*(.bss*)
 		*(.bootstrap_stack)
 		_bss_end = .;
+		_kernel_end = .;
+		_kernel_size = _kernel_end - _kernel_start;
 	}
-	/* Add a symble the indicates the end address of the kernel. */
-	_kernel_end = .;
-	_kernel_size = _kernel_end - _kernel_start;
 }

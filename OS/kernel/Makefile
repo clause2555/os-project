@@ -33,6 +33,10 @@ kernel/kernel.o \
 kernel/idt.o \
 kernel/handlers.o \
 kernel/pic.o \
+kernel/apic.o \
+kernel/multiboot.o \
+kernel/memory.o \
+kernel/paging.o \
 
 OBJS=\
 $(ARCHDIR)/crti.o \
