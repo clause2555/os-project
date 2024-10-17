@@ -2,4 +2,4 @@
 set -e
 . ./iso.sh
 
-qemu-system-$(./target-triplet-to-arch.sh $HOST) -cdrom fableos.iso
+qemu-system-$(./target-triplet-to-arch.sh $HOST) -m 512M -cdrom fableos.iso

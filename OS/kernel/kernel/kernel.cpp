@@ -7,6 +7,8 @@
 #include "kernel/memory.h"
 #include "kernel/paging.h"
 #include "kernel/cpuid.h"
+#include "kernel/keyboard.h"
+#include "kernel/acpi.h"
 
 static inline void outb(uint16_t port, uint8_t val) {
 	asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
@@ -43,9 +45,12 @@ extern "C" void kernel_main(uint32_t magic, multiboot_info_t* mb_info) {
             		asm volatile ("int $0"); // no console init yet, testing for failure with divby0
         	} else {
             		// Initialize APIC
+			map_bios_area();
+			map_rsdt();
             		APIC::enable_apic();
 			APIC::disable_pic();
-			APIC::setup_apic_timer(1000, 0x3);
+			APIC::init_io_apic();
+			//APIC::setup_apic_timer(1000, 0x3);
        		}
     	} else {
     		pic_remap(32, 40);
@@ -55,6 +60,7 @@ extern "C" void kernel_main(uint32_t magic, multiboot_info_t* mb_info) {
 	printf("Hello, c++ kernel World!\n");
 
 	while (1) {
-		asm volatile("hlt");
+		handle_keyboard_input();
+		//asm volatile("hlt");
 	}
 }

@@ -1,5 +1,6 @@
 #include <string.h>
 #include "kernel/idt.h"
+#include "kernel/keyboard.h"
 
 // Create an aligned array of IDT entries
 __attribute__((aligned(0x10)))
@@ -13,6 +14,9 @@ extern void* isr_stub_table[];
 
 // Set the IRQ stubs table in assembly (defined in interrups.S)
 extern void* irq_stub_table[];
+
+// Def to keyboard handler
+extern "C" void keyboard_handler();
 
 extern "C" void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags) {
     idt_entry_t* descriptor = &idt[vector];
@@ -37,6 +41,8 @@ extern "C" void idt_init() {
     for (uint8_t vector = 0; vector < 16; vector++) {
         idt_set_descriptor(32 + vector, irq_stub_table[vector], 0x8E);
     }
+
+    //idt_set_descriptor(33, (void*)keyboard_handler, 0x8E);
 
     // Load the new IDT and enable interrupts
     __asm__ volatile ("lidt %0" : : "m"(idtr)); // Load IDT

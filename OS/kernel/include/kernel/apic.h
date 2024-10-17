@@ -12,7 +12,13 @@ namespace APIC {
     void disable_pic();
     void send_eoi();
     void setup_apic_timer(uint32_t initial_count, uint32_t divide_config);
+    void send_ipi(uint32_t apic_id, uint8_t vector);
 
+    // I/O functions
+    void map_ioapic();
+    void enable_io_apic();
+    void unmask_io_apic_irq(int irq, uint8_t vector);
+    void init_io_apic();
 } //APIC
 
 #endif // APIC_H

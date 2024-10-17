@@ -94,7 +94,9 @@ isr_stub_table:
 .macro irq_stub number
 .global irq_stub_\number
 irq_stub_\number:
+    pushl $ \number
     call irq_handler
+    addl $4, %esp
     iret
 .endm
 
