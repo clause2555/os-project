@@ -35,10 +35,10 @@ kernel/handlers.o \
 kernel/pic.o \
 kernel/apic.o \
 kernel/multiboot.o \
-kernel/acpi.o \
 kernel/memory.o \
-kernel/io.o \
+kernel/vmemory.o \
 kernel/paging.o \
+kernel/io.o \
 kernel/scancode_map.o \
 kernel/keyboard.o \
 

@@ -1,14 +1,14 @@
 #include "kernel/apic.h"
 #include "kernel/acpi.h"
 #include "stdio.h"
-#include "kernel/paging.h"
+
 
 namespace APIC {
 
     #define IA32_APIC_BASE_MSR          0x1B
     #define IA32_APIC_BASE_MSR_ENABLE  0x800
-    #define APIC_BASE_VIRT              0xC0EE0000  // Virtual address where APIC is mapped
-    #define IOAPIC_BASE_VIRT		0xC0EF0000 // virtual address of I/O APIC
+    #define APIC_BASE_VIRT              0xC03FB000  // Virtual address where APIC is mapped
+    #define IOAPIC_BASE_VIRT		0xC03FB000 // virtual address of I/O APIC
     #define APIC_REG(offset)            *((volatile uint32_t *)(APIC_BASE_VIRT + offset))
 
     // Local APIC register offsets
@@ -35,33 +35,6 @@ namespace APIC {
 
     static inline void outb(uint16_t port, uint8_t val) {
         asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
-    }
-
-    void map_ioapic() {
-	// RSDT mapped earlier
-	acpi_rsdt_t* rsdt = reinterpret_cast<acpi_rsdt_t*>(0xC0200000);
-
-        void* madt = find_madt(rsdt);
-        if (madt == NULL) {
-            printf("MADT not found!\n");
-           return;
-        }
-
-        void* ioapic_physical_address = find_ioapic_base_from_madt(madt);
-        if (ioapic_physical_address == NULL) {
-            printf("I/O APIC not found in MADT!\n");
-            return;
-        }
-
-        if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000),
-                              reinterpret_cast<void*>(IOAPIC_BASE_VIRT),
-                              ioapic_physical_address,
-                              Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
-            printf("Failed to map I/O APIC!\n");
-            return;
-        }
-
-        printf("I/O APIC mapped to virtual address 0x%08x\n", IOAPIC_BASE_VIRT);
     }
 
     // CPUID instruction wrapper
@@ -138,67 +111,4 @@ namespace APIC {
         // Write the vector and delivery mode (fixed) to the lower ICR register
         apic_write(LAPIC_ICR_LOWER, vector);
     }
-
-    uint32_t io_apic_read_reg(uint32_t reg) {
-        ioapic_base[IOAPIC_REG_SELECT / 4 ] = reg;
-	return ioapic_base[IOAPIC_REG_WINDOW / 4];
-    }
-
-    void io_apic_write_reg(uint32_t reg, uint32_t value) {
-	ioapic_base[IOAPIC_REG_SELECT / 4] = reg;
-	ioapic_base[IOAPIC_REG_WINDOW / 4] = value;
-    }
-
-    // Enable I/O APIC
-    void enable_io_apic() {
-        // Typically, no specific enable is needed beyond configuring the redirection table.
-        // However, ensure that the spurious interrupt vector is set and enabled.
-
-        // Read the current value
-        uint32_t spurious_vector = io_apic_read_reg(0xF);
-        spurious_vector |= 0x100; // Enable the I/O APIC (bit 8)
-        spurious_vector |= 0xFF;  // Set the spurious interrupt vector to 0xFF
-        io_apic_write_reg(0xF, spurious_vector);
-    }
-
-    // Unmask and set IRQ1 to vector 33 in I/O APIC
-    void unmask_io_apic_irq(int irq, uint8_t vector) {
-        // Each redirection entry is 2 registers: low and high
-        // Entry 0 corresponds to IRQ0, Entry 1 to IRQ1, etc.
-        // Each entry occupies 16 bytes: low (bits 0-31) and high (bits 32-63)
-
-        uint32_t redirection_reg_low = irq * 2;
-        uint32_t redirection_reg_high = irq * 2 + 1;
-
-        // Read the current redirection entry
-        uint32_t lower = io_apic_read_reg(redirection_reg_low);
-        uint32_t upper = io_apic_read_reg(redirection_reg_high);
-
-        // Set the vector
-        lower = (lower & ~0xFF) | vector;
-
-        // Clear the mask bit (bit 16) to unmask
-        lower &= ~(1 << 16);
-
-        // Set the delivery mode to fixed (bits 8-10 = 000)
-        lower &= ~(0x7 << 8); // Clear bits 8-10
-
-        // Set the destination to this CPU's APIC ID
-        // Assuming single CPU, set to 0
-        upper = 0;
-
-        // Write back the modified redirection entry
-        io_apic_write_reg(redirection_reg_low, lower);
-        io_apic_write_reg(redirection_reg_high, upper);
-    }
-
-    // Initialize I/O APIC
-    void init_io_apic() {
-	map_ioapic();    
-        enable_io_apic();
-
-        // Unmask IRQ1 and set it to vector 33
-        unmask_io_apic_irq(1, 33);
-    }
-
 } // namespace APIC

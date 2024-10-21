@@ -10,103 +10,215 @@
 
 // Signature for RSDP is "RSD PTR "
 #define RSDP_SIGNATURE "RSD PTR "
+#define MAX_IOAPICS 16
 
-#define RSDT_VIRT_ADDRESS 0xC0300000  // Virtual address for mapping RSDT above kernel
 
-void map_rsdt() {
-    uint32_t rsdt_phys_addr = find_rsdt_address();
+namespace ACPI {
+    IOAPICInfo ioapics[MAX_IOAPICS];
+    uint32_t ioapic_count = 0;
 
-    if (rsdt_phys_addr == 0) {
-	printf("Failed to find RSDT address!\n");
-	return;
+    RSDP_t* find_rsdp() {
+        // Access EBDA segment from physical address 0x40E
+        uint16_t ebda_segment = *((uint16_t*)0x40E);
+        uintptr_t ebda_phys = ebda_segment * 16;
+        uintptr_t ebda_virt = 0xC0000000 + ebda_phys; // Assuming identity mapping or appropriate mapping
+
+        // Search EBDA for RSDP
+        for (uintptr_t addr = ebda_phys; addr < ebda_phys + 1024; addr += 16) {
+            RSDP_t* rsdp = (RSDP_t*)addr;
+            if (memcmp(rsdp->Signature, RSDP_SIGNATURE, 8) == 0) {
+		size_t rsdp_size = (rsdp->Revision == 0) ? 20 : sizeof(RSDP_t);
+                if (validate_rsdp_checksum((uint8_t*)rsdp, rsdp_size)) {
+                    return rsdp;
+                }
+            }
+        }
+
+        // If not found, search main BIOS area
+        uintptr_t bios_start_virt = 0xE0000; // Mapped virtual address for 0x000E0000
+        for (uintptr_t addr = bios_start_virt; addr < bios_start_virt + 0x20000; addr += 16) { // 128KB
+            RSDP_t* rsdp = (RSDP_t*)addr;
+            if (memcmp(rsdp->Signature, RSDP_SIGNATURE, 8) == 0) {
+		size_t rsdp_size = (rsdp->Revision == 0) ? 20 : sizeof(RSDP_t);
+                if (validate_rsdp_checksum((uint8_t*)rsdp, rsdp_size)) {
+                    return rsdp;
+                }
+            }
+        }
+
+        // RSDP not found
+        return nullptr;
     }
 
-    // Map the RSDT physical address to the virtual address (RSDT_VIRT_ADDRESS)
-    if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000),
-                          reinterpret_cast<void*>(RSDT_VIRT_ADDRESS),
-                          reinterpret_cast<void*>(rsdt_phys_addr),
-                          Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
-        printf("Failed to map RSDT!\n");
-        return;
+    bool validate_rsdp_checksum(uint8_t* data, size_t length) {
+        uint8_t sum = 0;
+        for (size_t i = 0; i < length; i++) {
+            sum += data[i];
+        }
+        return (sum == 0);
     }
 
-    printf("RSDT mapped to virtual address: 0x%x\n", RSDT_VIRT_ADDRESS);
-}
+    ACPISDTHeader* find_sdt(RSDP_t* rsdp) {
+        if (rsdp->Revision >= 2) {
+            // ACPI 2.0+, use XSDT
+            uintptr_t xsdt_phys = rsdp->XsdtAddress;
+            uintptr_t xsdt_virt = 0xA041A000 + xsdt_phys; // Adjust as per your mapping
+            ACPISDTHeader* xsdt = (ACPISDTHeader*)xsdt_virt;
 
-// use the RSDP to get the RSDT physical address
-uint32_t find_rsdt_address() {
-    acpi_rsdp_t* rsdp = reinterpret_cast<acpi_rsdp_t*>(find_rsdp());
-    if (rsdp == NULL) {
-        printf("RSDP not found!\n");
-        return 0;
-    }
+            // Validate the XSDT checksum (similar to RSDT checksum validation)
+            if (!validate_sdt_checksum(xsdt)) {
+                return nullptr;
+            }
+            return xsdt;
+        } else {
+            // ACPI 1.0, use RSDT
+            uintptr_t rsdt_phys = rsdp->RsdtAddress;
+            uintptr_t rsdt_virt = 0xA041A000 + rsdt_phys; // Adjust as per your mapping
+            ACPISDTHeader* rsdt = (ACPISDTHeader*)rsdt_virt;
 
-    // RSDT address is stored in the RSDP
-    return rsdp->rsdt_address;  // Physical address of the RSDT
-}
-
-
-// Find the RSDP in the memory
-void* find_rsdp() {
-    uint8_t* addr = (uint8_t*)0xC0200000;  // Search the mapped virtual BIOS memory area
-    uint8_t* end = (uint8_t*)(0xC0200000 + (0x00100000 - 0x000A0000));  // End of the mapped region
-
-    for (uint8_t* ptr = addr; ptr < end; ptr += 16) {
-        if (memcmp(ptr, RSDP_SIGNATURE, 8) == 0) {
-            return ptr;  // Found RSDP
+            // Validate the RSDT checksum
+            if (!validate_sdt_checksum(rsdt)) {
+                return nullptr;
+            }
+            return rsdt;
         }
     }
 
-    return NULL;
-}
-// Find the MADT in the ACPI tables
-void* find_madt(acpi_rsdt_t* rsdt) {
-    uint32_t entries = (rsdt->header.length - sizeof(acpi_header_t)) / 4;
-    for (uint32_t i = 0; i < entries; i++) {
-        acpi_header_t* header = (acpi_header_t*)(uint32_t)rsdt->pointer_to_other_sdt[i];
-        // Check for MADT signature
-        if (memcmp(header->signature, "APIC", 4) == 0) {
-            return (void*)header;  // Found MADT
+    bool validate_sdt_checksum(ACPISDTHeader* sdt) {
+        uint8_t sum = 0;
+        uint8_t* data = (uint8_t*)sdt;
+        for (size_t i = 0; i < sdt->Length; i++) {
+            sum += data[i];
         }
-    }
-    return NULL;
-}
-
-// Find the I/O APIC base address from the MADT
-void* find_ioapic_base_from_madt(void* madt) {
-    acpi_madt_t* madt_ptr = (acpi_madt_t*)madt;
-    uint8_t* entry = (uint8_t*)madt + sizeof(acpi_madt_t);
-    uint8_t* end = (uint8_t*)madt + madt_ptr->header.length;
-
-    while (entry < end) {
-        acpi_madt_ioapic_t* madt_entry = (acpi_madt_ioapic_t*)entry;
-
-        if (madt_entry->type == 1) {  // Type 1 is I/O APIC
-            acpi_madt_ioapic_t* ioapic_entry = (acpi_madt_ioapic_t*)madt_entry;
-            return (void*)(uintptr_t)ioapic_entry->ioapic_address;  // Return I/O APIC base address
-        }
-
-        entry += madt_entry->length;  // Move to next entry
+        return (sum == 0);
     }
 
-    return NULL;  // No I/O APIC entry found
-}
+    ACPISDTHeader* find_rsdt(RSDP_t* rsdp) {
+        uintptr_t rsdt_phys = rsdp->RsdtAddress;
+        uintptr_t rsdt_virt = rsdt_phys; // Adjust as per your mapping
 
-void map_bios_area() {
-    // Map the BIOS area (0x000A0000 to 0x00100000) into virtual memory
-    uint32_t bios_physical_start = 0x000A0000;
-    uint32_t bios_physical_end = 0x00100000;
-    uint32_t bios_virtual_start = 0xC0200000;  // Arbitrary virtual address to map this region
+        ACPISDTHeader* rsdt = (ACPISDTHeader*)rsdt_virt;
 
-    for (uint32_t phys = bios_physical_start; phys < bios_physical_end; phys += 0x1000) {
-        // Map each page in the BIOS area to the corresponding virtual address
-        if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000),  // Use your page directory
-                              reinterpret_cast<void*>(bios_virtual_start + (phys - bios_physical_start)),
-                              reinterpret_cast<void*>(phys),
-                              Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
-            printf("Failed to map BIOS area at physical address: 0x%08x\n", phys);
+        // Validate RSDT checksum
+        if (!validate_rsdt_checksum(rsdt)) {
+            return nullptr;
+        }
+
+        return rsdt;
+    }
+
+    bool validate_rsdt_checksum(ACPISDTHeader* rsdt) {
+        uint8_t sum = 0;
+        uint8_t* data = (uint8_t*)rsdt;
+        for (size_t i = 0; i < rsdt->Length; i++) {
+            sum += data[i];
+        }
+        return (sum == 0);
+    }
+
+    MADT* find_madt(ACPISDTHeader* rsdt) {
+        size_t entry_count = (rsdt->Length - sizeof(ACPISDTHeader)) / 4;
+        uint32_t* sdt_ptr = (uint32_t*)((uint8_t*)rsdt + sizeof(ACPISDTHeader));
+
+        for (size_t i = 0; i < entry_count; i++) {
+            ACPISDTHeader* table = (ACPISDTHeader*)(0xB0000000 + sdt_ptr[i]); // Adjust mapping
+            if (memcmp(table->Signature, "APIC", 4) == 0) {
+                // Validate MADT checksum
+                if (validate_rsdt_checksum(table)) {
+                    return (MADT*)table;
+                }
+            }
+        }
+
+        return nullptr; // MADT not found
+    }
+
+    void parse_madt(uint8_t* madt_ptr, size_t madt_length) {
+        size_t processed = sizeof(MADT); // Start after the MADT header
+        while (processed < madt_length) {
+            MADTEntryHeader* entry_header = (MADTEntryHeader*)(madt_ptr + processed);
+            switch (entry_header->type) {
+                case 1: { // IOAPIC
+                    if (ioapic_count >= MAX_IOAPICS) {
+                        printf("Maximum IOAPIC count reached.\n");
+                        return;
+                    }
+                    IOAPICEntry* ioapic_entry = (IOAPICEntry*)(madt_ptr + processed);
+                    ioapics[ioapic_count].id = ioapic_entry->io_apic_id;
+                    ioapics[ioapic_count].address = ioapic_entry->io_apic_address;
+                    ioapics[ioapic_count].gsi_base = ioapic_entry->global_system_interrupt_base;
+                    ioapic_count++;
+                    break;
+                }
+                // Handle other entry types if necessary
+                default:
+                    break;
+            }
+            processed += entry_header->length;
+        }
+    }
+
+    bool configure_ioapic_for_keyboard(IOAPICInfo* ioapic, uint32_t gsi, uint8_t vector) {
+        // Calculate the redirection register offset
+        // Each redirection entry occupies two 32-bit registers
+        // Lower 32 bits: Interrupt Vector, Delivery Mode, Destination Mode, etc.
+        // Upper 32 bits: Mask, etc.
+        uint32_t redirection_reg = gsi * 2;
+
+        uint32_t lower = vector | 0x00000020;
+	uint32_t upper = 0x00000000;
+        // Configure the lower 32 bits
+        lower = vector | 0x00000020; // Delivery mode: Fixed, Interrupt Vector
+
+        // Configure the upper 32 bits
+        upper = 0x00000000; // Unmask the interrupt
+
+        volatile uint32_t* redir_low = (volatile uint32_t*)(ioapic->address + 0x10 + redirection_reg * 4);
+	volatile uint32_t* redir_high = (volatile uint32_t*)(ioapic->address + 0x10 + (redirection_reg * 4) + 4);
+
+        *redir_low = lower;
+	*redir_high = upper;
+
+        return true;
+    }
+
+    // Example usage after parsing MADT
+    void setup_keyboard_ioapic() {
+        for (uint32_t i = 0; i < ioapic_count; i++) {
+            // Assume GSI1 is for keyboard
+            if (configure_ioapic_for_keyboard(&ioapics[i], 1, 0x21)) { // Vector 0x21
+                printf("Keyboard IOAPIC configured successfully.\n");
+            } else {
+                printf("Failed to configure Keyboard IOAPIC.\n");
+            }
+        }
+    }
+
+    void initialize_acpi_and_ioapic() {
+        RSDP_t* rsdp = find_rsdp();
+        if (!rsdp) {
+            printf("RSDP not found.\n");
             return;
         }
+
+        ACPISDTHeader* sdt = find_sdt(rsdp);
+        if (!sdt) {
+            printf("RSDT/XSDT not found or invalid.\n");
+            return;
+        }
+
+        MADT* madt = find_madt(sdt);
+        if (!madt) {
+            printf("MADT not found or invalid.\n");
+            return;
+        }
+
+        parse_madt((uint8_t*)madt, madt->header.Length);
+        if (ioapic_count == 0) {
+            printf("No IOAPICs found.\n");
+            return;
+        } else {
+            setup_keyboard_ioapic();
+	}
     }
-    printf("Mapped BIOS area (0x000A0000 - 0x00100000) to virtual address 0xC0200000\n");
-}
+} // ACPI namespace

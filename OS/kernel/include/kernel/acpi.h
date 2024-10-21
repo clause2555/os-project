@@ -4,59 +4,91 @@
 #define ACPI_H
 
 #include <stdint.h>
+#include <stddef.h>
 
-// ACPI Header structure
-typedef struct {
-    char signature[4];
-    uint32_t length;
-    uint8_t revision;
-    uint8_t checksum;
-    char oem_id[6];
-    char oem_table_id[8];
-    uint32_t oem_revision;
-    uint32_t creator_id;
-    uint32_t creator_revision;
-} __attribute__((packed)) acpi_header_t;
+namespace ACPI {
 
-// ACPI RSDT structure
-typedef struct {
-    acpi_header_t header;
-    uint32_t pointer_to_other_sdt[];
-} __attribute__((packed)) acpi_rsdt_t;
+    struct RSDP_t {
+        char Signature[8];
+        uint8_t Checksum;
+        char OEMID[6];
+        uint8_t Revision;
+        uint32_t RsdtAddress;
 
-// ACPI MADT structure
-typedef struct {
-    acpi_header_t header;
-    uint32_t lapic_address;
-    uint32_t flags;
-} __attribute__((packed)) acpi_madt_t;
+	// valid on if revisoin >= 2
+	uint32_t Length;
+	uint64_t XsdtAddress;
+	uint8_t ExtendedChecksum;
+	uint8_t Reserved[3];
+    } __attribute__((packed));
 
-// ACPI MADT I/O APIC entry structure
-typedef struct {
-    uint8_t type;
-    uint8_t length;
-    uint8_t ioapic_id;
-    uint8_t reserved;
-    uint32_t ioapic_address;
-    uint32_t gsi_base;
-} __attribute__((packed)) acpi_madt_ioapic_t;
+    struct ACPISDTHeader {
+        char Signature[4];
+        uint32_t Length;
+        uint8_t Revision;
+        uint8_t Checksum;
+        char OEMID[6];
+        char OEMTableID[8];
+        uint32_t OEMRevision;
+        uint32_t CreatorID;
+        uint32_t CreatorRevision;
+    } __attribute__((packed));
 
-// RSDP structure (ACPI 1.0 version)
-struct acpi_rsdp_t {
-    char signature[8];        // "RSD PTR "
-    uint8_t checksum;         // Checksum for the first 20 bytes
-    char oem_id[6];           // OEM Identifier
-    uint8_t revision;         // ACPI version (0 for 1.0, >=2 for ACPI 2.0+)
-    uint32_t rsdt_address;    // Physical address of the RSDT
-};
+    struct MADT {
+        ACPISDTHeader header;
+	uint32_t local_apic_address;
+	uint32_t flags;
+	// variable-length entries
+    } __attribute__((packed));
 
-bool is_rsdp(acpi_rsdp_t* rsdp);
-void map_rsdt();
-uint32_t find_rsdt_address();
-void* find_rsdp();
-void* find_madt(acpi_rsdt_t* rsdt);
-void* find_ioapic_base_from_madt(void* madt);
-void map_bios_area();
+    struct MADTEntryHeader {
+        uint8_t type;
+        uint8_t length;
+    } __attribute__((packed));
+
+    struct IOAPICEntry {
+        MADTEntryHeader header;
+        uint8_t io_apic_id;
+        uint8_t reserved;
+        uint32_t io_apic_address;
+        uint32_t global_system_interrupt_base;
+    } __attribute__((packed));
+
+    struct MADTEntry {
+        MADTEntryHeader header;
+        // Union of possible entries
+    } __attribute__((packed));
+
+    struct IOAPICInfo {
+        uint8_t id;
+        uint32_t address;
+        uint32_t gsi_base;
+    };
+
+    RSDP_t* find_rsdp();
+
+    bool validate_rsdp_checksum(uint8_t* data, size_t length);
+
+    bool validate_rsdp_extended(RSDP_t* rsdp);
+
+    ACPISDTHeader* find_rsdt(RSDP_t* rsdp);
+
+    ACPISDTHeader* find_sdt(RSDP_t* rsdp);
+
+    bool validate_sdt_checksum(ACPISDTHeader* sdt);
+
+    bool validate_rsdt_checksum(ACPISDTHeader* rsdt);
+
+    MADT* find_madt(ACPISDTHeader* rsdt);
+
+    void parse_madt(uint8_t* madt_ptr, size_t madt_length);
+
+    bool configure_ioapic_for_keyboard(IOAPICInfo* ioapic, uint32_t gsi, uint8_t vector);
+
+    void setup_keyboard_ioapic();
+
+    void initialize_acpi_and_ioapic();
+}
 
 #endif  // ACPI_H
 

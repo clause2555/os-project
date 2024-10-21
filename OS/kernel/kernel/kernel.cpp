@@ -4,63 +4,42 @@
 #include <kernel/tty.h>
 #include "kernel/apic.h"
 #include "kernel/multiboot.h"
-#include "kernel/memory.h"
-#include "kernel/paging.h"
-#include "kernel/cpuid.h"
+//#include "kernel/cpuid.h"
 #include "kernel/keyboard.h"
-#include "kernel/acpi.h"
-
-static inline void outb(uint16_t port, uint8_t val) {
-	asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
-}
-
-void init_timer(uint32_t frequency) {
-	uint32_t divisor = 1193180 / frequency;
-
-	outb(0x43, 0x36);
-
-	outb(0x40, (uint8_t)(divisor & 0xFF));
-	outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));
-}
+//#include "kernel/acpi.h"
+#include "kernel/memory.h"
+#include "kernel/vmemory.h"
+#include "kernel/paging.h"
 
 extern "C" void kernel_main(uint32_t magic, multiboot_info_t* mb_info) {
 	terminal_initialize();
 
+	printf("TEST pre memory manager.");
 
-	g_multiboot_info = mb_info;
+	pmm_init(mb_info);
 
-	initialize_memory_manager();
-
-	uint32_t* page_dir_phys = reinterpret_cast<uint32_t*>(0x106000);
-
-	uint32_t* page_table_phys = reinterpret_cast<uint32_t*>(0x107000);
-
-	Paging::init_paging(page_dir_phys, page_table_phys);
+	vma_init();
 
 	idt_init();
 
-	if (CPUID::cpuid(1).edx & (1 << 9)) { // APIC is bit 9 in EDX
-        	if (!Paging::map_page(reinterpret_cast<uint32_t*>(0xC0106000), reinterpret_cast<void*>(0xC0EE0000), reinterpret_cast<void*>(0xFEE00000), Paging::PAGE_PRESENT | Paging::PAGE_WRITABLE)) {
-			//TODO set up custom programmable interrupt to failure to PIC if the memory for APIC fails to map
-            		asm volatile ("int $0"); // no console init yet, testing for failure with divby0
-        	} else {
-            		// Initialize APIC
-			map_bios_area();
-			map_rsdt();
-            		APIC::enable_apic();
-			APIC::disable_pic();
-			APIC::init_io_apic();
-			//APIC::setup_apic_timer(1000, 0x3);
-       		}
-    	} else {
-    		pic_remap(32, 40);
-		init_timer(19);
-	}
+	//printf("THIS IS A TEST");
+
+	// Map FEE00000 to a virtual address in the higher-half
+    map_page((void*)0xC0FEE000, (void*)0xFEE00000, PAGE_PRESENT | PAGE_RW);
+    // Map FEC00000 to a virtual address in the higher-half
+    map_page((void*)0xC0FEC000, (void*)0xFEC00000, PAGE_PRESENT | PAGE_RW);
+    // Map 1FFE1000 to a virtual address in the higher-half
+    map_page((void*)0xC01F1000, (void*)0x1FFE1000, PAGE_PRESENT | PAGE_RW);
+
+    APIC::enable_apic();
+	APIC::disable_pic();
+	//ACPI::initialize_acpi_and_ioapic();
+	APIC::setup_apic_timer(1000, 0x3);
 
 	printf("Hello, c++ kernel World!\n");
 
 	while (1) {
 		handle_keyboard_input();
-		//asm volatile("hlt");
+		asm volatile("hlt");
 	}
 }

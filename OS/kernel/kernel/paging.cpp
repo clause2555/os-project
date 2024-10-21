@@ -1,160 +1,84 @@
-// paging.cpp
+// paging.c
 #include "kernel/paging.h"
-#include "kernel/apic.h" // For APIC-related mappings
-#include "kernel/cpuid.h" // For CPUID detection
-#include "kernel/memory.h" // For memory allocation
-#include <stdio.h> // For debugging prints
-#include <string.h> 
-#include <stddef.h>
+#include "kernel/memory.h"
+#include <string.h>
+#include <stdint.h>
 
-namespace Paging {
+// Assuming boot_page_directory is mapped and accessible
+extern uint32_t boot_page_directory;
 
-    // Self-referencing entry index (typically the last entry)
-    constexpr size_t SELF_REF_INDEX = 1023;
+// Convert virtual address to page directory and table indices
+static inline uint32_t get_pd_index(uintptr_t addr) {
+    return (addr >> 22) & 0x3FF;
+}
 
-    // Kernel's page directory and table (virtual addresses)
-    uint32_t* kernel_page_directory;
-    uint32_t* boot_page_table1;
+static inline uint32_t get_pt_index(uintptr_t addr) {
+    return (addr >> 12) & 0x3FF;
+}
 
-    // Initialize paging with existing page directory and first page table
-    void init_paging(uint32_t* page_directory_phys, uint32_t* page_table1_phys) {
-        kernel_page_directory = reinterpret_cast<uint32_t*>(0xC0106000); // Virtual address
-        boot_page_table1 = reinterpret_cast<uint32_t*>(0xC0107000); // Virtual address
+void map_page(void* virtual_addr, void* physical_addr, uint32_t flags) {
+    uintptr_t virt = (uintptr_t) virtual_addr;
+    uintptr_t phys = (uintptr_t) physical_addr;
 
-        // Set up self-referencing
-        kernel_page_directory[SELF_REF_INDEX] = reinterpret_cast<uint32_t>(page_directory_phys) | PAGE_PRESENT | PAGE_WRITABLE;
+    uint32_t pd_index = get_pd_index(virt);
+    uint32_t pt_index = get_pt_index(virt);
 
-        // Flush TLB
-        asm volatile ("mov %0, %%cr3" : : "r"(page_directory_phys));
+    // Get the page directory entry
+    uint32_t* page_directory = (uint32_t*) &boot_page_directory;
+    uint32_t pd_entry = page_directory[pd_index];
+
+    // If the page table is not present, allocate one
+    if (!(pd_entry & PAGE_PRESENT)) {
+        void* new_pt = pmm_alloc_page();
+        if (!new_pt) {
+            // Handle allocation failure
+            return;
+        }
+        memset(new_pt, 0, PAGE_SIZE);
+        page_directory[pd_index] = (uintptr_t)new_pt | PAGE_PRESENT | PAGE_RW;
+        pd_entry = page_directory[pd_index];
     }
 
-    // Helper to extract indices from virtual address
-    static inline void get_indices(void* virt_addr, size_t& pd_index, size_t& pt_index) {
-        uintptr_t addr = reinterpret_cast<uintptr_t>(virt_addr);
-        pd_index = (addr >> 22) & 0x3FF;
-        pt_index = (addr >> 12) & 0x3FF;
+    // Get the page table
+    uint32_t* page_table = (uint32_t*)(pd_entry & 0xFFFFF000);
+    page_table[pt_index] = phys | flags | PAGE_PRESENT;
+
+    flush_tlb();
+}
+
+void unmap_page(void* virtual_addr) {
+    uintptr_t virt = (uintptr_t) virtual_addr;
+    uint32_t pd_index = get_pd_index(virt);
+    uint32_t pt_index = get_pt_index(virt);
+
+    uint32_t* page_directory = (uint32_t*) &boot_page_directory;
+    uint32_t pd_entry = page_directory[pd_index];
+
+    if (!(pd_entry & PAGE_PRESENT)) {
+        // Page table not present
+        return;
     }
 
-    bool map_page(uint32_t* page_directory, void* virt_addr, void* phys_addr, uint32_t flags) {
-        size_t pd_index, pt_index;
-        get_indices(virt_addr, pd_index, pt_index);
+    uint32_t* page_table = (uint32_t*)(pd_entry & 0xFFFFF000);
+    uint32_t pt_entry = page_table[pt_index];
 
-        // Check if page table is present
-        if (!(page_directory[pd_index] & PAGE_PRESENT)) {
-            // Allocate a new page table
-            void* new_page_table_phys = allocate_page(); 
-            if (!new_page_table_phys) {
-                printf("Failed to allocate new page table.\n");
-                return false;
-            }
-
-            // Clear the new page table
-            memset(new_page_table_phys, 0, 4096);
-
-            // Map the new page table in the page directory
-            page_directory[pd_index] = reinterpret_cast<uint32_t>(new_page_table_phys) | PAGE_PRESENT | PAGE_WRITABLE;
-
-            // If self-referencing is set, update the mapping
-            if (pd_index == SELF_REF_INDEX) {
-                // Update self-referencing entry if needed
-            }
-        }
-
-        // Get the page table
-        uint32_t* page_table = reinterpret_cast<uint32_t*>(0xFFC00000 + pd_index * 0x1000); // Self-referencing mapping
-
-        // Check if the page is already mapped
-        if (page_table[pt_index] & PAGE_PRESENT) {
-            printf("Virtual address already mapped.\n");
-            return false;
-        }
-
-        // Map the page
-        page_table[pt_index] = (reinterpret_cast<uint32_t>(phys_addr) & 0xFFFFF000) | (flags & 0xFFF) | PAGE_PRESENT;
-
-        // Flush TLB
-        flush_tlb(virt_addr);
-
-        return true;
+    if (!(pt_entry & PAGE_PRESENT)) {
+        // Page not mapped
+        return;
     }
 
-    bool unmap_page(uint32_t* page_directory, void* virt_addr) {
-        size_t pd_index, pt_index;
-        get_indices(virt_addr, pd_index, pt_index);
+    // Clear the page table entry
+    page_table[pt_index] = 0;
 
-        // Check if page table is present
-        if (!(page_directory[pd_index] & PAGE_PRESENT)) {
-            printf("Page directory entry not present.\n");
-            return false;
-        }
+    // Optionally, free the physical page
+    uintptr_t phys_addr = pt_entry & 0xFFFFF000;
+    pmm_free_page((void*) phys_addr);
 
-        // Get the page table
-        uint32_t* page_table = reinterpret_cast<uint32_t*>(0xFFC00000 + pd_index * 0x1000); // Self-referencing mapping
+    flush_tlb();
+}
 
-        // Check if the page is mapped
-        if (!(page_table[pt_index] & PAGE_PRESENT)) {
-            printf("Page not mapped.\n");
-            return false;
-        }
-
-        // Unmap the page
-        page_table[pt_index] = 0;
-
-        // Optionally, check if the entire page table is empty and free it
-        bool empty = true;
-        for (size_t i = 0; i < 1024; ++i) {
-            if (page_table[i] & PAGE_PRESENT) {
-                empty = false;
-                break;
-            }
-        }
-
-        if (empty) {
-            // Free the page table
-            void* page_table_phys = reinterpret_cast<void*>(page_directory[pd_index] & 0xFFFFF000);
-            free_page(page_table_phys); // Implement free_page()
-
-            // Unmap the page table from the page directory
-            page_directory[pd_index] = 0;
-        }
-
-        // Flush TLB
-        flush_tlb(virt_addr);
-
-        return true;
-    }
-
-    void* get_physical_address(uint32_t* page_directory, void* virt_addr) {
-        size_t pd_index, pt_index;
-        get_indices(virt_addr, pd_index, pt_index);
-
-        // Check if page table is present
-        if (!(page_directory[pd_index] & PAGE_PRESENT)) {
-            return nullptr;
-        }
-
-        // Get the page table
-        uint32_t* page_table = reinterpret_cast<uint32_t*>(0xFFC00000 + pd_index * 0x1000); // Self-referencing mapping
-
-        // Check if the page is present
-        if (!(page_table[pt_index] & PAGE_PRESENT)) {
-            return nullptr;
-        }
-
-        // Get physical address
-        uint32_t phys_addr = page_table[pt_index] & 0xFFFFF000;
-        uintptr_t offset = reinterpret_cast<uintptr_t>(virt_addr) & 0xFFF;
-
-        return reinterpret_cast<void*>(phys_addr + offset);
-    }
-
-    void flush_tlb(void* virt_addr) {
-        asm volatile (
-            "invlpg (%0)"
-            :
-            : "r"(virt_addr)
-            : "memory"
-        );
-    }
-
-} // namespace Paging
+void flush_tlb() {
+    uintptr_t cr3;
+    __asm__ volatile("mov %%cr3, %0" : "=r"(cr3));  // Read CR3
+    __asm__ volatile("mov %0, %%cr3" : : "r"(cr3));  // Write CR3 (flush TLB)
+}

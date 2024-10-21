@@ -46,5 +46,5 @@ extern "C" void idt_init() {
 
     // Load the new IDT and enable interrupts
     __asm__ volatile ("lidt %0" : : "m"(idtr)); // Load IDT
-    __asm__ volatile ("sti");                   // Set the interrupt flag
+    //__asm__ volatile ("sti");                   // Set the interrupt flag
 }

@@ -164,14 +164,14 @@ reload_cs:
 	# 1 MiB as it can be generally usefull, and there no need to specially map the VGA buffer.
 	movl $0, %esi
 	# Map 1023 pages. the 1024 will be the VGA text buffer
-	movl $1022, %ecx
+	movl $1021, %ecx
 
 1:
 	# Only map the kernel.
-	cmpl $_kernel_start, %esi
-	jl 2f
-	cmpl $(_kernel_end - 0xC0000000), %esi
-	jge 3f
+	#cmpl $_kernel_start, %esi
+	#jl 2f
+	#cmpl $(_kernel_end - 0xC0000000), %esi
+	#jge 3f
 
 	# Map physical address as "present, writable". Note that this maps
 	# .text and .rodata as writable.  Mind security and map them as non-writable
@@ -185,11 +185,12 @@ reload_cs:
 	# size of the entries in boot_page_table1 is 4 bytes.
 	addl $4, %edi
 	# Loop to the next entry if we havent finished.
+	cmpl $0x100000, %esi 
 	loop 1b
 
 3:
 	# Map VGA video emory to 0xC03FF000 as "present, writable".
-	movl $(0x000B8000 | 0x003), boot_page_table1 - 0xC0000000 + 1022 * 4
+	#movl $(0x000B8000 | 0x003), boot_page_table1 - 0xC0000000 + 1022 * 4
 
 	# The page table is used at both page directory entry 0 (virtually from 0x0
 	# to 0x3FFFFF) (thus identity mapping the kernel) and page directory entry
@@ -201,6 +202,7 @@ reload_cs:
 	# Map the page table to both virtual address 0x00000000 and 0xC0000000
 	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
 	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
+	movl $(boot_page_directory - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 1023 * 4
 
 	# Set cr3 to the address of the boot_page_directory.
 	movl $(boot_page_directory - 0xC0000000), %ecx
