@@ -78,7 +78,7 @@ namespace APIC {
         spurious_value |= 0xFF; // set vector num for spurious interrupts
         lapic_base[LAPIC_SPURIOUS_VECTOR_REG / 4] = spurious_value;
 
-        configure_ioapic_irq(1, 0x21);
+        configure_ioapic_irq(0x1, 0x21);
      }  
 
     // Read from APIC register
@@ -123,7 +123,7 @@ namespace APIC {
         uint32_t redirection_reg = irq * 2;  // Redirection register index
 
         // Step 1: Configure RedLow with mask
-        uint32_t redir_low = vector | (0x00 << 8) | (1 << 16); // Vector | Delivery Mode | Mask
+        uint32_t redir_low = (vector & 0xFF) | (0x00 << 8) | (1 << 16); // Vector | Delivery Mode | Mask
         ioapic_write(redirection_reg, redir_low);
 
         // Step 2: Configure RedHigh
@@ -166,8 +166,8 @@ namespace APIC {
     void inspect_ioapic_registers() {
         printf("I/O APIC ID Register: 0x%x\n", ioapic_read(0x00));        // Read I/O APIC ID
         printf("I/O APIC Version Register: 0x%x\n", ioapic_read(0x01));   // Read I/O APIC version
-        // Read the redirection table entries (pins 0 to 23)
-        for (uint32_t pin = 0; pin < 24; pin++) {
+        // Read the redirection table entries (pins 0 to 23) just pin 1 for now bc thats what i am trying to write to
+        for (uint32_t pin = 0; pin < 1; pin++) {
             uint32_t redirection_reg_low = 0x10 + (pin * 2);  // Low part of redirection entry
             uint32_t redirection_reg_high = 0x10 + (pin * 2) + 1;  // High part of redirection entry
             printf("Pin %u: redirection table low = 0x%x, high = 0x%x\n", pin,

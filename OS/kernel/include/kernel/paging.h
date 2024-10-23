@@ -9,6 +9,8 @@
 #define PAGE_PRESENT    0x1
 #define PAGE_RW         0x2
 #define PAGE_USER       0x4
+#define WRITE_THROUGH   0x8
+#define CACHE_DISABLE   0x10
 #define PAGE_ACCESSED   0x20
 #define PAGE_DIRTY      0x40
 

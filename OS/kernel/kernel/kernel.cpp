@@ -23,10 +23,11 @@ extern "C" void kernel_main(uint32_t magic, multiboot_info_t* mb_info) {
 	//printf("THIS IS A TEST");
 
 	// Map FEE00000 to a virtual address in the higher-half
-    map_page((void*)0xC0FEE000, (void*)0xFEE00000, PAGE_PRESENT | PAGE_RW | (1 << 4));
+    map_page((void*)0xC0FEE000, (void*)0xFEE00000, PAGE_PRESENT | PAGE_RW | CACHE_DISABLE);
     // Map FEC00000 to a virtual address in the higher-half
-    map_page((void*)0xC0FEC000, (void*)0xFEC00000, PAGE_PRESENT | PAGE_RW | (1 << 4));
-    // Map 1FFE1000 to a virtual address in the higher-half
+    map_page((void*)0xC0FEC000, (void*)0xFEC00000, PAGE_PRESENT | PAGE_RW | CACHE_DISABLE);
+    // Map 1FFE0000-1FFE1000 to a virtual address in the higher-half
+	map_page((void*)0xC01F0000, (void*)0x1FFE0000, PAGE_PRESENT | PAGE_RW);
     map_page((void*)0xC01F1000, (void*)0x1FFE1000, PAGE_PRESENT | PAGE_RW);
 
     APIC::enable_apic();
@@ -35,7 +36,7 @@ extern "C" void kernel_main(uint32_t magic, multiboot_info_t* mb_info) {
 	ACPI::initialize_ps2_controller();
 	//APIC::setup_apic_timer(1000, 0x3);
 
-	//APIC::inspect_ioapic_registers();
+	APIC::inspect_ioapic_registers();
 
 	printf("Hello, c++ kernel World!\n");
 
