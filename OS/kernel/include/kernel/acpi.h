@@ -88,6 +88,24 @@ namespace ACPI {
     void setup_keyboard_ioapic();
 
     void initialize_acpi_and_ioapic();
+
+    void disable_ps2_ports();
+
+    void flush_output_buffer();
+
+    void configure_ps2_controller();
+
+    bool perform_controller_self_test();
+
+    bool check_dual_channel_ps2();
+
+    bool test_ps2_ports();
+
+    void enable_ps2_ports();
+
+    bool reset_ps2_devices();
+
+    void initialize_ps2_controller();
 }
 
 #endif  // ACPI_H

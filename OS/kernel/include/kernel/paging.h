@@ -12,9 +12,6 @@
 #define PAGE_ACCESSED   0x20
 #define PAGE_DIRTY      0x40
 
-// Initialize paging (already partially done in your assembly code)
-void paging_init();
-
 // Map a virtual address to a physical address with flags
 void map_page(void* virtual_addr, void* physical_addr, uint32_t flags);
 

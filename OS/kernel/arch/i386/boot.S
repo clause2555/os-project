@@ -210,7 +210,7 @@ reload_cs:
 
 	# Enable paging and the write-protect bit.
 	movl %cr0, %ecx
-	orl $0x80010000, %ecx
+	orl $0x80000000, %ecx
 	movl %ecx, %cr0
 
 	# Jump to higher half with an absolute jump.

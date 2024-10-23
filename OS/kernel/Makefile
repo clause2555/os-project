@@ -35,6 +35,7 @@ kernel/handlers.o \
 kernel/pic.o \
 kernel/apic.o \
 kernel/multiboot.o \
+kernel/acpi.o \
 kernel/memory.o \
 kernel/vmemory.o \
 kernel/paging.o \

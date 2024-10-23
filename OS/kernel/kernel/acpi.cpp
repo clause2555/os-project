@@ -5,12 +5,14 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "kernel/io.h"
 #include <string.h>
 #include "kernel/paging.h"
 
 // Signature for RSDP is "RSD PTR "
 #define RSDP_SIGNATURE "RSD PTR "
 #define MAX_IOAPICS 16
+#define RSDT_VIRT_ADDRESS 0xC01F1905
 
 
 namespace ACPI {
@@ -121,7 +123,7 @@ namespace ACPI {
         uint32_t* sdt_ptr = (uint32_t*)((uint8_t*)rsdt + sizeof(ACPISDTHeader));
 
         for (size_t i = 0; i < entry_count; i++) {
-            ACPISDTHeader* table = (ACPISDTHeader*)(0xB0000000 + sdt_ptr[i]); // Adjust mapping
+            ACPISDTHeader* table = (ACPISDTHeader*)(sdt_ptr[i] + 0xA0210000); // Adjust mapping
             if (memcmp(table->Signature, "APIC", 4) == 0) {
                 // Validate MADT checksum
                 if (validate_rsdt_checksum(table)) {
@@ -145,7 +147,7 @@ namespace ACPI {
                     }
                     IOAPICEntry* ioapic_entry = (IOAPICEntry*)(madt_ptr + processed);
                     ioapics[ioapic_count].id = ioapic_entry->io_apic_id;
-                    ioapics[ioapic_count].address = ioapic_entry->io_apic_address;
+                    ioapics[ioapic_count].address = 0xC0FEC000;
                     ioapics[ioapic_count].gsi_base = ioapic_entry->global_system_interrupt_base;
                     ioapic_count++;
                     break;
@@ -165,19 +167,20 @@ namespace ACPI {
         // Upper 32 bits: Mask, etc.
         uint32_t redirection_reg = gsi * 2;
 
-        uint32_t lower = vector | 0x00000020;
-	uint32_t upper = 0x00000000;
-        // Configure the lower 32 bits
-        lower = vector | 0x00000020; // Delivery mode: Fixed, Interrupt Vector
-
-        // Configure the upper 32 bits
-        upper = 0x00000000; // Unmask the interrupt
+        uint32_t lower = vector | (0x00 << 8);
+	    uint32_t upper = 0x00000000;
 
         volatile uint32_t* redir_low = (volatile uint32_t*)(ioapic->address + 0x10 + redirection_reg * 4);
-	volatile uint32_t* redir_high = (volatile uint32_t*)(ioapic->address + 0x10 + (redirection_reg * 4) + 4);
+	    volatile uint32_t* redir_high = (volatile uint32_t*)(ioapic->address + 0x10 + (redirection_reg * 4) + 4);
 
         *redir_low = lower;
-	*redir_high = upper;
+	    *redir_high = upper;
+
+        *redir_low &= ~(1 << 16);
+
+       initialize_ps2_controller();
+
+       outb(0x60, 0xF4);
 
         return true;
     }
@@ -194,18 +197,165 @@ namespace ACPI {
         }
     }
 
-    void initialize_acpi_and_ioapic() {
-        RSDP_t* rsdp = find_rsdp();
-        if (!rsdp) {
-            printf("RSDP not found.\n");
+
+    void disable_ps2_ports() {
+        // Disable first PS/2 port (keyboard)
+        outb(0x64, 0xAD);
+
+        // Disable second PS/2 port (mouse), if present
+        outb(0x64, 0xA7);
+    }
+
+    void flush_output_buffer() {
+        while (inb(0x64) & 0x01) {  // Check if the output buffer is full (bit 0 of port 0x64)
+            inb(0x60);  // Discard the data from port 0x60
+        }
+    }
+
+    void configure_ps2_controller() {
+        // Send command to read configuration byte
+        outb(0x64, 0x20);
+        uint8_t config_byte = inb(0x60);
+
+        // Modify the configuration byte
+        config_byte &= ~0x01; // Disable IRQ1 (keyboard)
+        config_byte &= ~0x40; // Disable translation for port 1
+        config_byte &= ~0x10; // Enable clock for port 1
+
+        // Send command to write configuration byte
+        outb(0x64, 0x60);
+        outb(0x60, config_byte);
+    }
+
+    bool perform_controller_self_test() {
+        outb(0x64, 0xAA);
+        uint8_t result = inb(0x60);
+        
+        if (result == 0x55) {
+            printf("PS/2 Controller self-test passed.\n");
+            return true;
+        } else {
+            printf("PS/2 Controller self-test failed (code: 0x%x).\n", result);
+            return false;
+        }
+    }
+
+    bool check_dual_channel_ps2() {
+        outb(0x64, 0xA8);  // Enable second PS/2 port
+        outb(0x64, 0x20);  // Read the configuration byte again
+        uint8_t config_byte = inb(0x60);
+
+        // Check if the second PS/2 port is enabled
+        if (config_byte & 0x20) {
+            printf("Second PS/2 port not available.\n");
+            return false;
+        } else {
+            printf("Dual channel PS/2 controller detected.\n");
+            return true;
+        }
+    }
+
+    bool test_ps2_ports() {
+        // Test first PS/2 port (keyboard)
+        outb(0x64, 0xAB);
+        uint8_t result = inb(0x60);
+        if (result != 0x00) {
+            printf("First PS/2 port test failed.\n");
+            return false;
+        }
+
+        // If dual channel, test the second PS/2 port (mouse)
+        if (check_dual_channel_ps2()) {
+            outb(0x64, 0xA9);
+            result = inb(0x60);
+            if (result != 0x00) {
+                printf("Second PS/2 port test failed.\n");
+                return false;
+            }
+        }
+
+        printf("PS/2 port tests passed.\n");
+        return true;
+    }
+
+    void enable_ps2_ports() {
+        // Enable first PS/2 port (keyboard)
+        outb(0x64, 0xAE);
+
+        // If dual channel, enable second PS/2 port (mouse)
+        if (check_dual_channel_ps2()) {
+            outb(0x64, 0xA8);
+        }
+    }
+
+    bool reset_ps2_devices() {
+        // Reset the first device (keyboard)
+        outb(0x60, 0xFF);
+        uint8_t response = inb(0x60);
+        if (response != 0xFA) {
+            printf("Failed to reset first PS/2 device.\n");
+            return false;
+        }
+        printf("First PS/2 device reset successfully.\n");
+
+        // If dual channel, reset the second device (mouse)
+        if (check_dual_channel_ps2()) {
+            outb(0x60, 0xFF);
+            response = inb(0x60);
+            if (response != 0xFA) {
+                printf("Failed to reset second PS/2 device.\n");
+                return false;
+            }
+            printf("Second PS/2 device reset successfully.\n");
+        }
+
+        return true;
+    }
+
+    void initialize_ps2_controller() {
+
+        disable_ps2_ports();
+
+        flush_output_buffer();
+
+        configure_ps2_controller();
+
+        if (!perform_controller_self_test()) {
+            printf("PS/2 controller self-test failed.\n");
             return;
         }
 
-        ACPISDTHeader* sdt = find_sdt(rsdp);
-        if (!sdt) {
-            printf("RSDT/XSDT not found or invalid.\n");
+        bool dual_channel = check_dual_channel_ps2();
+
+        if (!test_ps2_ports()) {
+            printf("PS/2 port tests failed.\n");
             return;
         }
+
+        enable_ps2_ports();
+
+        if (!reset_ps2_devices()) {
+            printf("PS/2 device reset failed.\n");
+            return;
+        }
+
+        printf("PS/2 controller initialization complete.\n");
+    }
+
+
+
+    void initialize_acpi_and_ioapic() {
+        //RSDP_t* rsdp = find_rsdp();
+        //if (!rsdp) {
+        //    printf("RSDP not found.\n");
+        //    return;
+        //}
+
+        ACPISDTHeader* sdt = reinterpret_cast<ACPISDTHeader*>(RSDT_VIRT_ADDRESS);
+        //if (!sdt) {
+        //    printf("RSDT/XSDT not found or invalid.\n");
+        //    return;
+        //}
 
         MADT* madt = find_madt(sdt);
         if (!madt) {
@@ -219,6 +369,6 @@ namespace ACPI {
             return;
         } else {
             setup_keyboard_ioapic();
-	}
+	    }
     }
 } // ACPI namespace

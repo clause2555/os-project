@@ -7,8 +7,8 @@ namespace APIC {
 
     #define IA32_APIC_BASE_MSR          0x1B
     #define IA32_APIC_BASE_MSR_ENABLE  0x800
-    #define APIC_BASE_VIRT              0xC03FB000  // Virtual address where APIC is mapped
-    #define IOAPIC_BASE_VIRT		0xC03FB000 // virtual address of I/O APIC
+    #define APIC_BASE_VIRT              0xC0FEE000  // Virtual address where APIC is mapped
+    #define IOAPIC_BASE_VIRT		0xC0FEC000 // virtual address of I/O APIC
     #define APIC_REG(offset)            *((volatile uint32_t *)(APIC_BASE_VIRT + offset))
 
     // Local APIC register offsets
@@ -35,6 +35,10 @@ namespace APIC {
 
     static inline void outb(uint16_t port, uint8_t val) {
         asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+    }
+
+    static inline void memory_barrier() {
+        asm volatile("mfence" ::: "memory");
     }
 
     // CPUID instruction wrapper
@@ -68,12 +72,14 @@ namespace APIC {
         eax |= IA32_APIC_BASE_MSR_ENABLE;
         write_msr(IA32_APIC_BASE_MSR, eax, edx);
 
-	// Set the Spurious Interrupt Vectory Register to 0xFF and enable APIC
-	uint32_t spurious_value = lapic_base[LAPIC_SPURIOUS_VECTOR_REG / 4];
-	spurious_value |= 0x100; // enable (bit 8)
-	spurious_value |= 0xFF; // set vector num for spurious interrupts
-	lapic_base[LAPIC_SPURIOUS_VECTOR_REG / 4] = spurious_value;
-    }  
+        // Set the Spurious Interrupt Vectory Register to 0xFF and enable APIC
+        uint32_t spurious_value = lapic_base[LAPIC_SPURIOUS_VECTOR_REG / 4];
+        spurious_value |= 0x100; // enable (bit 8)
+        spurious_value |= 0xFF; // set vector num for spurious interrupts
+        lapic_base[LAPIC_SPURIOUS_VECTOR_REG / 4] = spurious_value;
+
+        configure_ioapic_irq(1, 0x21);
+     }  
 
     // Read from APIC register
     uint32_t apic_read(uint32_t reg_offset) {
@@ -110,5 +116,62 @@ namespace APIC {
 
         // Write the vector and delivery mode (fixed) to the lower ICR register
         apic_write(LAPIC_ICR_LOWER, vector);
+    }
+
+    // Function to configure IOAPIC for a specific IRQ
+    void configure_ioapic_irq(uint8_t irq, uint8_t vector) {
+        uint32_t redirection_reg = irq * 2;  // Redirection register index
+
+        // Step 1: Configure RedLow with mask
+        uint32_t redir_low = vector | (0x00 << 8) | (1 << 16); // Vector | Delivery Mode | Mask
+        ioapic_write(redirection_reg, redir_low);
+
+        // Step 2: Configure RedHigh
+        uint32_t redir_high = 0x00000000; // Destination CPU 0, etc.
+        ioapic_write(redirection_reg + 1, redir_high);
+
+        // Step 3: Unmask the interrupt by clearing the mask bit
+        redir_low &= ~(1 << 16);
+        ioapic_write(redirection_reg, redir_low);
+
+        // Optional: Read back to verify
+        uint32_t read_redir_low = ioapic_read(redirection_reg);
+        uint32_t read_redir_high = ioapic_read(redirection_reg + 1);
+
+        printf("I/O APIC pin %d (IRQ%d) configured for keyboard with vector 0x%x.\n", irq, irq, vector);
+        printf("RedLow: 0x%x, RedHigh: 0x%x\n", read_redir_low, read_redir_high);
+    }
+
+    // Function to read from the I/O APIC register
+    uint32_t ioapic_read(uint32_t reg) {
+        volatile uint32_t* ioregsel = (volatile uint32_t*)(IOAPIC_BASE_VIRT + IOAPIC_REG_SELECT);
+        volatile uint32_t* iowin = (volatile uint32_t*)(IOAPIC_BASE_VIRT + IOAPIC_REG_WINDOW);
+
+        *ioregsel = reg;      // Select the register
+        memory_barrier();     // Ensure the write completes
+        return *iowin;        // Read the value
+    }
+
+    // Function to write to the I/O APIC register
+    void ioapic_write(uint32_t reg, uint32_t value) {
+        volatile uint32_t* ioregsel = (volatile uint32_t*)(IOAPIC_BASE_VIRT + IOAPIC_REG_SELECT);
+        volatile uint32_t* iowin = (volatile uint32_t*)(IOAPIC_BASE_VIRT + IOAPIC_REG_WINDOW);
+
+        *ioregsel = reg;      // Select the register
+        memory_barrier();     // Ensure the write completes
+        *iowin = value;       // Write the value
+        memory_barrier();     // Ensure the write completes
+    }
+
+    void inspect_ioapic_registers() {
+        printf("I/O APIC ID Register: 0x%x\n", ioapic_read(0x00));        // Read I/O APIC ID
+        printf("I/O APIC Version Register: 0x%x\n", ioapic_read(0x01));   // Read I/O APIC version
+        // Read the redirection table entries (pins 0 to 23)
+        for (uint32_t pin = 0; pin < 24; pin++) {
+            uint32_t redirection_reg_low = 0x10 + (pin * 2);  // Low part of redirection entry
+            uint32_t redirection_reg_high = 0x10 + (pin * 2) + 1;  // High part of redirection entry
+            printf("Pin %u: redirection table low = 0x%x, high = 0x%x\n", pin,
+                ioapic_read(redirection_reg_low), ioapic_read(redirection_reg_high));
+        }
     }
 } // namespace APIC

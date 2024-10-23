@@ -19,6 +19,12 @@ namespace APIC {
     void enable_io_apic();
     void unmask_io_apic_irq(int irq, uint8_t vector);
     void init_io_apic();
+
+    void configure_ioapic_irq(uint8_t irq, uint8_t vector);
+    uint32_t ioapic_read(uint32_t reg);
+    void ioapic_write(uint32_t, uint32_t value);
+
+    void inspect_ioapic_registers();
 } //APIC
 
 #endif // APIC_H
